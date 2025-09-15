@@ -108,10 +108,10 @@ def processaPlanilhas():
 
     #Salva valores duplicados
     nomesDuplicados = planilhaMensal[planilhaMensal.duplicated(subset=['NOME'], keep=False)]
-    datasDuplicadas = planilhaMensal[planilhaMensal.duplicated(subset=['NOME', 'INICIO_LOTACAO'], keep=False)]
-    registroAntigo = nomesDuplicados.loc[nomesDuplicados.groupby('NOME')['INICIO_LOTACAO'].idxmin()]
+    #datasDuplicadas = planilhaMensal[planilhaMensal.duplicated(subset=['NOME', 'INICIO_LOTACAO'], keep=False)]
+    #registroAntigo = nomesDuplicados.loc[nomesDuplicados.groupby('NOME')['INICIO_LOTACAO'].idxmin()]
 
-    planilhaMensal.drop(registroAntigo.loc[~registroAntigo.index.isin(datasDuplicadas.index)].index, inplace=True)
+    #planilhaMensal.drop(registroAntigo.loc[~registroAntigo.index.isin(datasDuplicadas.index)].index, inplace=True)
 
     defineSiglas()
 
@@ -122,4 +122,4 @@ def processaPlanilhas():
     #Salva planilha mensal com as alterações realizadas
     #planilhaMensal.to_excel('Planilha Mensal - ALTERADA.xlsx')
 
-    return nomesDuplicados, datasDuplicadas, planilhasMescladas
+    return nomesDuplicados, planilhasMescladas

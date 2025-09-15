@@ -40,13 +40,13 @@ def mostraPlanilha(planilha, titulo):
         tabela.show()
 
 def processaPlanilhas():
-    nomesDuplicados, datasDuplicadas, planilhasMescladas = Planilhas.processaPlanilhas()
+    nomesDuplicados, planilhasMescladas = Planilhas.processaPlanilhas()
     if nomesDuplicados is None:
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
     
     mostraPlanilha(nomesDuplicados[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
-    mostraPlanilha(datasDuplicadas[['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']], 'Datas Duplicadas')
+    #mostraPlanilha(datasDuplicadas[['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']], 'Datas Duplicadas')
     mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
 
 
