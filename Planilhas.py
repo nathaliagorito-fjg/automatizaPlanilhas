@@ -120,6 +120,6 @@ def processaPlanilhas():
     planilhasMescladas['IGUAIS'] = planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA']
 
     #Salva planilha mensal com as alterações realizadas
-    #planilhaMensal.to_excel('Planilha Mensal - ALTERADA.xlsx')
+    planilhaMensal.to_excel('Planilha Mensal - eliminados registros de ex líderes.xlsx')
 
     return nomesDuplicados, planilhasMescladas
