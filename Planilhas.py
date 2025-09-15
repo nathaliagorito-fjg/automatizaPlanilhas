@@ -119,11 +119,6 @@ def processaPlanilhas():
     planilhasMescladas = planilhaMensal.merge(planilhaMinibio, on = 'NOME', how = 'inner', suffixes = ('_MENSAL', '_MINIBIO'))
     planilhasMescladas['IGUAIS'] = planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA']
 
-    with open('Registros com valores diferentes para ORGAO_ENTIDADE.txt', 'a', encoding='utf-8') as arquivo:
-        for i in range(len(planilhasMescladas)):
-            if planilhasMescladas.loc[i, 'IGUAIS'] == False:
-                arquivo.write(f'{planilhasMescladas.loc[i, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'SIGLA', 'IGUAIS']]}\n')
-
     #Salva planilha mensal com as alterações realizadas
     #planilhaMensal.to_excel('Planilha Mensal - ALTERADA.xlsx')
 
