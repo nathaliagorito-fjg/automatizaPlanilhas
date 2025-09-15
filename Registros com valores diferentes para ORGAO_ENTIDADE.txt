@@ -1,0 +1,355 @@
+NOME                      ALBERTO BALASSIANO
+ORGAO_ENTIDADE_MINIBIO                RIOLUZ
+SIGLA                                    NaN
+IGUAIS                                 False
+Name: 3, dtype: object
+NOME                      ALESSANDRA DE OLIVEIRA QUINTES ANDRADE
+ORGAO_ENTIDADE_MINIBIO                        FORA DA PREFEITURA
+SIGLA                                                       SMAS
+IGUAIS                                                     False
+Name: 7, dtype: object
+NOME                      ALEXANDRE FERREIRA REIS
+ORGAO_ENTIDADE_MINIBIO                   RIOAGUAS
+SIGLA                                         NaN
+IGUAIS                                      False
+Name: 14, dtype: object
+NOME                      ALEXANDRE MENDES RIBEIRO
+ORGAO_ENTIDADE_MINIBIO                         SME
+SIGLA                                          SMI
+IGUAIS                                       False
+Name: 15, dtype: object
+NOME                      ALINE CRISTINA DE MORAES
+ORGAO_ENTIDADE_MINIBIO                         CVL
+SIGLA                                         SMCG
+IGUAIS                                       False
+Name: 19, dtype: object
+NOME                      ANA CARLA BADARO MOREIRA PRADO
+ORGAO_ENTIDADE_MINIBIO                             CORIO
+SIGLA                                                GBP
+IGUAIS                                             False
+Name: 27, dtype: object
+NOME                      ANA CLAUDIA RODRIGUES DAFLON LESCAUT
+ORGAO_ENTIDADE_MINIBIO                                  SPMRIO
+SIGLA                                                      NaN
+IGUAIS                                                   False
+Name: 31, dtype: object
+NOME                      ANDERSON DE ANDRADE MARINS
+ORGAO_ENTIDADE_MINIBIO                        GEORIO
+SIGLA                                            NaN
+IGUAIS                                         False
+Name: 43, dtype: object
+NOME                      ANDREI RAYBOLT DOS SANTOS
+ORGAO_ENTIDADE_MINIBIO                     RIOAGUAS
+SIGLA                                           NaN
+IGUAIS                                        False
+Name: 58, dtype: object
+NOME                      ARMANDO JOSE GUEDES QUEIROGA JUNIOR
+ORGAO_ENTIDADE_MINIBIO                                    GBP
+SIGLA                                              SECONSERVA
+IGUAIS                                                  False
+Name: 66, dtype: object
+NOME                      BRUNA SANTOS MICELI
+ORGAO_ENTIDADE_MINIBIO                    IPP
+SIGLA                                     NaN
+IGUAIS                                  False
+Name: 70, dtype: object
+NOME                      CARLOS ALBERTO PERES KRYKHTINE
+ORGAO_ENTIDADE_MINIBIO                               GBP
+SIGLA                                                NaN
+IGUAIS                                             False
+Name: 82, dtype: object
+NOME                      CARLOS DANIEL DENADAI AMBROSIO
+ORGAO_ENTIDADE_MINIBIO                               SMF
+SIGLA                                                CVL
+IGUAIS                                             False
+Name: 84, dtype: object
+NOME                      CARLOS DANTAS DE CAMPOS
+ORGAO_ENTIDADE_MINIBIO                        SMI
+SIGLA                                         SMF
+IGUAIS                                      False
+Name: 85, dtype: object
+NOME                      CATIA NUNES POYARES
+ORGAO_ENTIDADE_MINIBIO                 CETRIO
+SIGLA                                    SMTR
+IGUAIS                                  False
+Name: 92, dtype: object
+NOME                      CRISTIANE GREICE DA COSTA SILVA RICARDO
+ORGAO_ENTIDADE_MINIBIO                                       SEOP
+SIGLA                                                      JUVRIO
+IGUAIS                                                      False
+Name: 105, dtype: object
+NOME                      CRISTIANE GREICE DA COSTA SILVA RICARDO
+ORGAO_ENTIDADE_MINIBIO                                       SEOP
+SIGLA                                                       GMRIO
+IGUAIS                                                      False
+Name: 106, dtype: object
+NOME                      CRISTIANE RODRIGUES GONCALVES HALICKI
+ORGAO_ENTIDADE_MINIBIO                                      SME
+SIGLA                                                       CVL
+IGUAIS                                                    False
+Name: 107, dtype: object
+NOME                      CRISTIANE RODRIGUES GONCALVES HALICKI
+ORGAO_ENTIDADE_MINIBIO                                      SME
+SIGLA                                                       CVL
+IGUAIS                                                    False
+Name: 108, dtype: object
+NOME                      CYNTHIA MARIA CANDIDA VALLIM
+ORGAO_ENTIDADE_MINIBIO                      PLANETARIO
+SIGLA                                              NaN
+IGUAIS                                           False
+Name: 110, dtype: object
+NOME                      CYNTHIA MARIA CANDIDA VALLIM
+ORGAO_ENTIDADE_MINIBIO                      PLANETARIO
+SIGLA                                              NaN
+IGUAIS                                           False
+Name: 111, dtype: object
+NOME                      DEBORA DE BARROS AUGUSTO
+ORGAO_ENTIDADE_MINIBIO                         CVL
+SIGLA                                          GBP
+IGUAIS                                       False
+Name: 126, dtype: object
+NOME                      ELOIR DE OLIVEIRA FARIA
+ORGAO_ENTIDADE_MINIBIO                     CETRIO
+SIGLA                                         NaN
+IGUAIS                                      False
+Name: 133, dtype: object
+NOME                      ERICA RODRIGUES DOS SANTOS
+ORGAO_ENTIDADE_MINIBIO                           SMS
+SIGLA                                            SMF
+IGUAIS                                         False
+Name: 137, dtype: object
+NOME                      FELIPE MACHADO MARTINS
+ORGAO_ENTIDADE_MINIBIO                       IPP
+SIGLA                                        NaN
+IGUAIS                                     False
+Name: 152, dtype: object
+NOME                      FLAVIA RAMOS DE OLIVEIRA GALVAO
+ORGAO_ENTIDADE_MINIBIO                                SMI
+SIGLA                                               GMRIO
+IGUAIS                                              False
+Name: 167, dtype: object
+NOME                      GEORGE DE SOUZA ALVES
+ORGAO_ENTIDADE_MINIBIO                     SEOP
+SIGLA                                       SMF
+IGUAIS                                    False
+Name: 176, dtype: object
+NOME                      ISABELA DOS SANTOS SAO LEAO
+ORGAO_ENTIDADE_MINIBIO                          GMRIO
+SIGLA                                             SMG
+IGUAIS                                          False
+Name: 188, dtype: object
+NOME                      JAIME PAULINO DE SOUZA NETO
+ORGAO_ENTIDADE_MINIBIO                        SEMESQV
+SIGLA                                             NaN
+IGUAIS                                          False
+Name: 191, dtype: object
+NOME                      JESSICA DO NASCIMENTO PEREIRA
+ORGAO_ENTIDADE_MINIBIO                              SMH
+SIGLA                                           SEACRIO
+IGUAIS                                            False
+Name: 197, dtype: object
+NOME                      JOAO CARLOS MADUREIRA JARDIM
+ORGAO_ENTIDADE_MINIBIO                        RIOAGUAS
+SIGLA                                              NaN
+IGUAIS                                           False
+Name: 202, dtype: object
+NOME                      JORGE MARCELINO DOS SANTOS JUNIOR
+ORGAO_ENTIDADE_MINIBIO                                  CVL
+SIGLA                                            PLANETARIO
+IGUAIS                                                False
+Name: 206, dtype: object
+NOME                      JULIANA BEZERRA COUTO
+ORGAO_ENTIDADE_MINIBIO                      IPP
+SIGLA                                       NaN
+IGUAIS                                    False
+Name: 213, dtype: object
+NOME                      JULIO CESAR URDANGARIN BATISTA JUNIOR
+ORGAO_ENTIDADE_MINIBIO                                      CVL
+SIGLA                                                  IPLANRIO
+IGUAIS                                                    False
+Name: 214, dtype: object
+NOME                      KATIA MARISA SOARES DA SILVA DE SOUZA
+ORGAO_ENTIDADE_MINIBIO                                  RIOURBE
+SIGLA                                                       NaN
+IGUAIS                                                    False
+Name: 217, dtype: object
+NOME                      KELLY DIAS ROCHA CARREIRA
+ORGAO_ENTIDADE_MINIBIO                       SPMRIO
+SIGLA                                           NaN
+IGUAIS                                        False
+Name: 218, dtype: object
+NOME                      KELLY FERREIRA ESCH
+ORGAO_ENTIDADE_MINIBIO                   SMIT
+SIGLA                                     NaN
+IGUAIS                                  False
+Name: 219, dtype: object
+NOME                      LAURA FANTTI DAVILLA SERPA
+ORGAO_ENTIDADE_MINIBIO                          SMIT
+SIGLA                                            NaN
+IGUAIS                                         False
+Name: 223, dtype: object
+NOME                      LEANDRO LAGE DOS SANTOS GUEDES
+ORGAO_ENTIDADE_MINIBIO                              SMCT
+SIGLA                                                NaN
+IGUAIS                                             False
+Name: 225, dtype: object
+NOME                      LEANDRO LAGE DOS SANTOS GUEDES
+ORGAO_ENTIDADE_MINIBIO                              SMCT
+SIGLA                                         PLANETARIO
+IGUAIS                                             False
+Name: 226, dtype: object
+NOME                      LEANDRO MARAVILHA BEZERRA
+ORGAO_ENTIDADE_MINIBIO                         SMAC
+SIGLA                                          SMTE
+IGUAIS                                        False
+Name: 227, dtype: object
+NOME                      LEONARDO SABA SANTOS
+ORGAO_ENTIDADE_MINIBIO                RIOSAUDE
+SIGLA                                      NaN
+IGUAIS                                   False
+Name: 232, dtype: object
+NOME                      LETICIA NOBREGA FONTI
+ORGAO_ENTIDADE_MINIBIO                    CORIO
+SIGLA                                       GBP
+IGUAIS                                    False
+Name: 236, dtype: object
+NOME                      LILIAN LOBATO NASCIMENTO
+ORGAO_ENTIDADE_MINIBIO                        SMDE
+SIGLA                                        GMRIO
+IGUAIS                                       False
+Name: 238, dtype: object
+NOME                      LUAN FELIPE XAVIER GOMES
+ORGAO_ENTIDADE_MINIBIO                  PLANETARIO
+SIGLA                                          NaN
+IGUAIS                                       False
+Name: 242, dtype: object
+NOME                      LUAN FELIPE XAVIER GOMES
+ORGAO_ENTIDADE_MINIBIO                  PLANETARIO
+SIGLA                                          NaN
+IGUAIS                                       False
+Name: 243, dtype: object
+NOME                      LUCIANA DE BRITO IDALGO
+ORGAO_ENTIDADE_MINIBIO                   IPLANRIO
+SIGLA                                         NaN
+IGUAIS                                      False
+Name: 249, dtype: object
+NOME                      LUIZ MURILLO NUNES TOBIAS
+ORGAO_ENTIDADE_MINIBIO                          IPP
+SIGLA                                      IPLANRIO
+IGUAIS                                        False
+Name: 260, dtype: object
+NOME                      MAIRA OLIVEIRA DA SILVA
+ORGAO_ENTIDADE_MINIBIO                      CORIO
+SIGLA                                         GBP
+IGUAIS                                      False
+Name: 262, dtype: object
+NOME                      MARCIA CRISTINA SANTOS LEITE
+ORGAO_ENTIDADE_MINIBIO                        RIOSAUDE
+SIGLA                                              NaN
+IGUAIS                                           False
+Name: 274, dtype: object
+NOME                      MARCIA MARIA OLIVEIRA REVOREDO
+ORGAO_ENTIDADE_MINIBIO                            CGMRIO
+SIGLA                                                NaN
+IGUAIS                                             False
+Name: 277, dtype: object
+NOME                      MARCIA MARIA OLIVEIRA REVOREDO
+ORGAO_ENTIDADE_MINIBIO                            CGMRIO
+SIGLA                                                NaN
+IGUAIS                                             False
+Name: 278, dtype: object
+NOME                      MARCIO DE CARVALHO ESSER
+ORGAO_ENTIDADE_MINIBIO                    RIOSAUDE
+SIGLA                                          SMS
+IGUAIS                                       False
+Name: 280, dtype: object
+NOME                      MARIANA DUARTE DOS SANTOS
+ORGAO_ENTIDADE_MINIBIO                       GEORIO
+SIGLA                                           NaN
+IGUAIS                                        False
+Name: 291, dtype: object
+NOME                      MICHEL GUIMARAES DIOGO
+ORGAO_ENTIDADE_MINIBIO                      SMIT
+SIGLA                                        NaN
+IGUAIS                                     False
+Name: 301, dtype: object
+NOME                      MICHELE FATIMA DE OLIVEIRA RODRIGUES MARIOSA P...
+ORGAO_ENTIDADE_MINIBIO                                               GEORIO
+SIGLA                                                                   NaN
+IGUAIS                                                                False
+Name: 302, dtype: object
+NOME                      NUNO CAMINADA FRANKLIN DE OLIVEIRA E SILVA
+ORGAO_ENTIDADE_MINIBIO                                           SME
+SIGLA                                                       MULTIRIO
+IGUAIS                                                         False
+Name: 315, dtype: object
+NOME                      PATRICIA FRANK DA GAMA PINTO
+ORGAO_ENTIDADE_MINIBIO                         SEACRIO
+SIGLA                                             SMAS
+IGUAIS                                           False
+Name: 322, dtype: object
+NOME                      PATRICIA NEY DE MONTEZUMA
+ORGAO_ENTIDADE_MINIBIO                     RIOAGUAS
+SIGLA                                           NaN
+IGUAIS                                        False
+Name: 324, dtype: object
+NOME                      PAULA DE OLIVEIRA CAMARGO
+ORGAO_ENTIDADE_MINIBIO                         SMCT
+SIGLA                                           NaN
+IGUAIS                                        False
+Name: 327, dtype: object
+NOME                      RAMON PIRES CARNAVAL BARBOSA
+ORGAO_ENTIDADE_MINIBIO                            SEOP
+SIGLA                                            GMRIO
+IGUAIS                                           False
+Name: 342, dtype: object
+NOME                      RENATO TEIXEIRA DE SA FREIRE
+ORGAO_ENTIDADE_MINIBIO                          CETRIO
+SIGLA                                             SMTR
+IGUAIS                                           False
+Name: 357, dtype: object
+NOME                      REYNALDO ANDRE GUERRIERI DE CASTRO
+ORGAO_ENTIDADE_MINIBIO                              RIOAGUAS
+SIGLA                                                    NaN
+IGUAIS                                                 False
+Name: 358, dtype: object
+NOME                      RICARDO SANTOS DE ALMEIDA
+ORGAO_ENTIDADE_MINIBIO                      RIOURBE
+SIGLA                                           NaN
+IGUAIS                                        False
+Name: 359, dtype: object
+NOME                      RODRIGO ARNAUT SCHWARTZ
+ORGAO_ENTIDADE_MINIBIO                   IPLANRIO
+SIGLA                                         NaN
+IGUAIS                                      False
+Name: 366, dtype: object
+NOME                      RODRIGO DE CARVALHO SILVA BORGES
+ORGAO_ENTIDADE_MINIBIO                            RIOAGUAS
+SIGLA                                                  NaN
+IGUAIS                                               False
+Name: 371, dtype: object
+NOME                      RONALD MIGUEL DOS SANTOS
+ORGAO_ENTIDADE_MINIBIO                      CETRIO
+SIGLA                                          NaN
+IGUAIS                                       False
+Name: 375, dtype: object
+NOME                      ROSEMARY DE FATIMA TURQUE IMPRONTA
+ORGAO_ENTIDADE_MINIBIO                                 SESQV
+SIGLA                                                    NaN
+IGUAIS                                                 False
+Name: 379, dtype: object
+NOME                      SERGIO NUNES DE OLIVEIRA
+ORGAO_ENTIDADE_MINIBIO                       SMPDA
+SIGLA                                          SMF
+IGUAIS                                       False
+Name: 386, dtype: object
+NOME                      TAIS DE SOUZA CARVALHO
+ORGAO_ENTIDADE_MINIBIO                  RIOAGUAS
+SIGLA                                        NaN
+IGUAIS                                     False
+Name: 396, dtype: object
+NOME                      THIAGO DA CRUZ SESSA
+ORGAO_ENTIDADE_MINIBIO                 RIOURBE
+SIGLA                                      NaN
+IGUAIS                                   False
+Name: 405, dtype: object
