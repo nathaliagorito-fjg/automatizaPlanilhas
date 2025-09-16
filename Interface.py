@@ -16,14 +16,14 @@ def carregaPlanilhas(tipo):
         else:
             Planilhas.planilhaMensal = pd.read_excel(diretorio)
 
-            labelMensagem['text'] = 'Planilha Mensal carregada.'
+            labelMensagem['text'] = 'Planilha MENSAL carregada.'
     elif tipo == 'minibio':
         if 'minibio' not in diretorio.lower():
             labelMensagem['text'] = 'Planilha errada.'
         else:
             Planilhas.planilhaMinibio = pd.read_excel(diretorio)
 
-            labelMensagem['text'] = 'Planilha Minibio carregada.'
+            labelMensagem['text'] = 'Planilha MINIBIO carregada.'
 
 def mostraPlanilha(planilha, titulo):
     if planilha is None or planilha.empty:
@@ -31,7 +31,8 @@ def mostraPlanilha(planilha, titulo):
     else:
         novaJanela = Toplevel(janela)
         novaJanela.title(titulo)
-        novaJanela.geometry('1300x500')
+        novaJanela.geometry('1095x500')
+        novaJanela.resizable(False, False)
 
         framePlanilha = Frame(novaJanela)
         framePlanilha.pack(fill=BOTH, expand=1)
@@ -45,10 +46,17 @@ def processaPlanilhas():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
     
+    buttonMensal.config(state='disabled')
+    buttonMinibio.config(state='disabled')
+
     mostraPlanilha(nomesDuplicados[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
     #mostraPlanilha(datasDuplicadas[['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']], 'Datas Duplicadas')
     mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
 
+def resetaTudo():
+    buttonMensal.config(state='normal')
+    buttonMinibio.config(state='normal')
+    labelMensagem['text'] = ''
 
 janela = Tk()
 janela.title('Leitor de Planilhas')
@@ -90,6 +98,11 @@ buttonMinibio.pack(pady=5)
 
 buttonProcessa = Button(janela, text='Processar Planilhas', command=lambda: processaPlanilhas() if (Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None) else labelMensagem.config(text='Carregue as duas planilhas primeiro!'))
 buttonProcessa.pack(pady=5)
+
+imagemButtonRefresh = PhotoImage(file='buttonRefresh 30x30.png')
+buttonRefresh = Button(janela, image=imagemButtonRefresh, command=lambda:resetaTudo())
+buttonRefresh.config(bg=buttonRefresh.master.cget('bg'), bd=0, relief='flat', width=30)
+buttonRefresh.pack(side=RIGHT, padx=10)
 
 labelMensagem = Label(janela, text='')
 labelMensagem.config(bg=labelMensagem.master.cget('bg'), bd=0, relief='flat', width=30)
