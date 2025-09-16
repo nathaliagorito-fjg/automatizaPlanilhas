@@ -40,6 +40,20 @@ def mostraPlanilha(planilha, titulo):
         tabela = Table(framePlanilha, dataframe=planilha)
         tabela.show()
 
+        #def fechaJanela():
+            #planilha.loc[:] = tabela.model.df
+
+            #for idx, linha in planilha.iterrows():
+                #for coluna in linha.index:
+                    #if Planilhas.planilhaMensal.at[idx, coluna] != linha[coluna]:
+                        #Planilhas.planilhaMensal.at[idx, coluna] = linha[coluna]
+            
+            #Planilhas.planilhaMensal.to_excel('Planilha ALTERADA.xlsx', index=False)
+
+            #novaJanela.destroy()
+
+        #novaJanela.protocol('WM_DELETE_WINDOW', fechaJanela)
+
 def processaPlanilhas():
     nomesDuplicados, planilhasMescladas = Planilhas.processaPlanilhas()
     if nomesDuplicados is None:
