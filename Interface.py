@@ -103,8 +103,8 @@ janela.option_add('*Font', ('Arial', 8))
 janela.option_add('*Relief', 'solid')
 janela.option_add('*Width', 20)
 
-labelTitulo = Label(janela, text='Processador de Planilhas Lideres Cariocas')
-labelTitulo.config(bg=labelTitulo.master.cget('bg'), bd=0, font=15, relief='flat', width=30)
+labelTitulo = Label(janela, text='Processador de Planilhas\nLideres Cariocas')
+labelTitulo.config(bg=labelTitulo.master.cget('bg'), bd=0, font=10, relief='flat', width=30)
 labelTitulo.pack(pady=15)
 
 infos = """
