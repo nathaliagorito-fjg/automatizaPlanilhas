@@ -1,8 +1,17 @@
+import os, sys
 import pandas as pd
 import Planilhas
 from pandastable import Table
 from tkinter import *
 from tkinter.filedialog import askopenfilename
+
+def armazenaImagem(diretorioAtual):
+    try:
+        diretorioTemporario = sys._MEIPASS
+    except Exception:
+        diretorioTemporario = os.path.abspath('.')
+    
+    return os.path.join(diretorioTemporario, diretorioAtual)
 
 def carregaPlanilhas(tipo):
     diretorio = askopenfilename(filetypes=[('Excel files', '*.xlsx *.xls')])
@@ -31,7 +40,7 @@ def mostraPlanilha(planilha, titulo):
     else:
         novaJanela = Toplevel(janela)
         novaJanela.title(titulo)
-        novaJanela.geometry('1095x500')
+        novaJanela.geometry('1100x500')
         novaJanela.resizable(False, False)
 
         framePlanilha = Frame(novaJanela)
@@ -42,6 +51,9 @@ def mostraPlanilha(planilha, titulo):
 
         #def fechaJanela():
             #planilha.loc[:] = tabela.model.df
+            #tabelaEditada = tabela.model.df
+
+            #Planilhas.planilhaMensal = Planilhas.planilhaMensal.loc[tabelaEditada]
 
             #for idx, linha in planilha.iterrows():
                 #for coluna in linha.index:
@@ -72,22 +84,21 @@ def resetaTudo():
     buttonMinibio.config(state='normal')
     labelMensagem['text'] = ''
 
-    janela.protocol('WM_DELETE_WINDOW', janela.destroy())
+    #janela.destroy()
 
 janela = Tk()
-janela.title('Leitor de Planilhas')
+janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
 janela.geometry('550x400')
 janela.resizable(False, False)
-janela.option_add('*Font', ('Arial', 8))
-janela.option_add('*Foreground', 'black')
-janela.option_add('*Background', 'white')
-janela.option_add('*Bd', 1)
-janela.option_add('*Relief', 'solid')
-janela.option_add('*Width', 20)
+janela.title('Processador de Planilhas')
 janela.option_add('*Acivebackground', 'black')
 janela.option_add('*Activeforeground', 'white')
-
-geometria = {'padx': 5, 'pady': 5, 'sticky': 'n'}
+janela.option_add('*Background', 'white')
+janela.option_add('*Foreground', 'black')
+janela.option_add('*Bd', 1)
+janela.option_add('*Font', ('Arial', 8))
+janela.option_add('*Relief', 'solid')
+janela.option_add('*Width', 20)
 
 labelTitulo = Label(janela, text='Processador de Planilhas')
 labelTitulo.config(bg=labelTitulo.master.cget('bg'), bd=0, font=15, relief='flat', width=30)
@@ -115,13 +126,14 @@ buttonMinibio.pack(pady=5)
 buttonProcessa = Button(janela, text='Processar Planilhas', command=lambda: processaPlanilhas() if (Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None) else labelMensagem.config(text='Carregue as duas planilhas primeiro!'))
 buttonProcessa.pack(pady=5)
 
-imagemButtonRefresh = PhotoImage(file='buttonRefresh.png')
-buttonRefresh = Button(janela, image=imagemButtonRefresh, command=lambda:resetaTudo())
-buttonRefresh.config(bg=buttonRefresh.master.cget('bg'), bd=0, relief='flat', width=30)
-buttonRefresh.pack(side=RIGHT, padx=10)
-
 labelMensagem = Label(janela, text='')
 labelMensagem.config(bg=labelMensagem.master.cget('bg'), bd=0, relief='flat', width=30)
-labelMensagem.pack(pady=20)
+labelMensagem.pack(pady=10)
+
+diretorioImagem = armazenaImagem('iconeRefresh.png')
+imagemButtonRefresh = PhotoImage(file=diretorioImagem)
+buttonRefresh = Button(janela, image=imagemButtonRefresh, command=lambda:resetaTudo())
+buttonRefresh.config(bg=buttonRefresh.master.cget('bg'), bd=0, relief='flat', width=30)
+buttonRefresh.pack(side=RIGHT, padx=10, pady=10)
 
 janela.mainloop()

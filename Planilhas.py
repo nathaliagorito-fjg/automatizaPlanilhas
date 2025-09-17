@@ -110,6 +110,7 @@ def processaPlanilhas():
     nomesDuplicados = planilhaMensal[planilhaMensal.duplicated(subset=['NOME'], keep=False)]
     #datasDuplicadas = planilhaMensal[planilhaMensal.duplicated(subset=['NOME', 'INICIO_LOTACAO'], keep=False)]
 
+    #Remove registros duplicados antigos
     #registroAntigo = nomesDuplicados.loc[nomesDuplicados.groupby('NOME')['INICIO_LOTACAO'].idxmin()]
     #planilhaMensal.drop(registroAntigo.loc[~registroAntigo.index.isin(datasDuplicadas.index)].index, inplace=True)
 
@@ -120,6 +121,6 @@ def processaPlanilhas():
     planilhasMescladas['IGUAIS'] = planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA']
 
     #Salva planilha mensal com as alterações realizadas
-    #planilhaMensal.to_excel('Planilha Mensal - eliminados registros de ex líderes.xlsx')
+    planilhaMensal.to_excel('Planilha Mensal - eliminados registros de ex líderes.xlsx')
 
     return nomesDuplicados, planilhasMescladas
