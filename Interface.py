@@ -72,6 +72,8 @@ def resetaTudo():
     buttonMinibio.config(state='normal')
     labelMensagem['text'] = ''
 
+    janela.protocol('WM_DELETE_WINDOW', janela.destroy())
+
 janela = Tk()
 janela.title('Leitor de Planilhas')
 janela.geometry('550x400')
@@ -113,7 +115,7 @@ buttonMinibio.pack(pady=5)
 buttonProcessa = Button(janela, text='Processar Planilhas', command=lambda: processaPlanilhas() if (Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None) else labelMensagem.config(text='Carregue as duas planilhas primeiro!'))
 buttonProcessa.pack(pady=5)
 
-imagemButtonRefresh = PhotoImage(file='buttonRefresh 30x30.png')
+imagemButtonRefresh = PhotoImage(file='buttonRefresh.png')
 buttonRefresh = Button(janela, image=imagemButtonRefresh, command=lambda:resetaTudo())
 buttonRefresh.config(bg=buttonRefresh.master.cget('bg'), bd=0, relief='flat', width=30)
 buttonRefresh.pack(side=RIGHT, padx=10)
