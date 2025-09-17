@@ -1,6 +1,7 @@
 import os, sys
 import pandas as pd
 import Planilhas
+from openpyxl import load_workbook
 from pandastable import Table
 from tkinter import *
 from tkinter.filedialog import askopenfilename
@@ -61,6 +62,8 @@ def mostraPlanilha(planilha, titulo):
                         #Planilhas.planilhaMensal.at[idx, coluna] = linha[coluna]
             
             #Planilhas.planilhaMensal.to_excel('Planilha ALTERADA.xlsx', index=False)
+            #ws = Planilhas.planilhaMensal.active
+            #ws.save('planilha mudada.xlsx')
 
             #novaJanela.destroy()
 
@@ -90,7 +93,7 @@ janela = Tk()
 janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
 janela.geometry('550x400')
 janela.resizable(False, False)
-janela.title('Processador de Planilhas')
+janela.title('Processador de Planilhas Lideres Cariocas')
 janela.option_add('*Acivebackground', 'black')
 janela.option_add('*Activeforeground', 'white')
 janela.option_add('*Background', 'white')
@@ -100,7 +103,7 @@ janela.option_add('*Font', ('Arial', 8))
 janela.option_add('*Relief', 'solid')
 janela.option_add('*Width', 20)
 
-labelTitulo = Label(janela, text='Processador de Planilhas')
+labelTitulo = Label(janela, text='Processador de Planilhas Lideres Cariocas')
 labelTitulo.config(bg=labelTitulo.master.cget('bg'), bd=0, font=15, relief='flat', width=30)
 labelTitulo.pack(pady=15)
 
