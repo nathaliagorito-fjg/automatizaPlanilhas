@@ -1,7 +1,6 @@
 import os, sys
 import pandas as pd
 import Planilhas
-from openpyxl import load_workbook
 from pandastable import Table
 from tkinter import *
 from tkinter.filedialog import askopenfilename
@@ -23,6 +22,7 @@ def carregaPlanilhas(tipo):
     if tipo == 'mensal':
         if 'mensal' not in diretorio.lower():
             labelMensagem['text'] = 'Planilha errada.'
+            labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
         else:
             Planilhas.planilhaMensal = pd.read_excel(diretorio)
 
@@ -30,6 +30,7 @@ def carregaPlanilhas(tipo):
     elif tipo == 'minibio':
         if 'minibio' not in diretorio.lower():
             labelMensagem['text'] = 'Planilha errada.'
+            labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
         else:
             Planilhas.planilhaMinibio = pd.read_excel(diretorio)
 
@@ -37,7 +38,7 @@ def carregaPlanilhas(tipo):
 
 def mostraPlanilha(planilha, titulo):
     if planilha is None or planilha.empty:
-        labelMensagem['text'] = 'Nada para mostrar!'
+        labelMensagem['text'] = 'Não há planilhas carregadas.'
     else:
         novaJanela = Toplevel(janela)
         novaJanela.title(titulo)
@@ -120,13 +121,13 @@ labelInfo = Label(janela, text=infos)
 labelInfo.config(bg=labelInfo.master.cget('bg'), bd=0, justify='left', relief='flat', width=0)
 labelInfo.pack(pady=15)
 
-buttonMensal = Button(janela, text='Carregar Mensal', command=lambda: carregaPlanilhas('mensal'))
+buttonMensal = Button(janela, text='Carregar Mensal', command=lambda:carregaPlanilhas('mensal'))
 buttonMensal.pack(pady=5)
 
-buttonMinibio = Button(janela, text='Carregar Minibio', command=lambda: carregaPlanilhas('minibio'))
+buttonMinibio = Button(janela, text='Carregar Minibio', command=lambda:carregaPlanilhas('minibio'))
 buttonMinibio.pack(pady=5)
 
-buttonProcessa = Button(janela, text='Processar Planilhas', command=lambda: processaPlanilhas() if (Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None) else labelMensagem.config(text='Carregue as duas planilhas primeiro!'))
+buttonProcessa = Button(janela, text='Processar Planilhas', command=lambda:processaPlanilhas() if (Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None) else labelMensagem.config(text='Carregue as duas planilhas primeiro!'))
 buttonProcessa.pack(pady=5)
 
 labelMensagem = Label(janela, text='')
