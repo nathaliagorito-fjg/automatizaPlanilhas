@@ -1,6 +1,7 @@
 import os, sys
 import pandas as pd
 import Planilhas
+from openpyxl import load_workbook
 from pandastable import Table
 from tkinter import *
 from tkinter.filedialog import askopenfilename
@@ -25,6 +26,11 @@ def carregaPlanilhas(tipo):
             labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
         else:
             Planilhas.planilhaMensal = pd.read_excel(diretorio)
+
+            global planilhaMensalAtiva, planilhaMensalFormatada
+            
+            planilhaMensalFormatada = load_workbook(diretorio)
+            planilhaMensalAtiva = planilhaMensalFormatada.active
 
             labelMensagem['text'] = 'Planilha MENSAL carregada.'
     elif tipo == 'minibio':
@@ -51,24 +57,19 @@ def mostraPlanilha(planilha, titulo):
         tabela = Table(framePlanilha, dataframe=planilha)
         tabela.show()
 
-        #def fechaJanela():
+        def fechaJanela():
             #planilha.loc[:] = tabela.model.df
-            #tabelaEditada = tabela.model.df
 
-            #Planilhas.planilhaMensal = Planilhas.planilhaMensal.loc[tabelaEditada]
+            # for r_idx, row in Planilhas.planilhaMensal.iterrows():
+            #     for c_idx, value in enumerate(row, start=1):
+            #         planilhaMensalAtiva.cell(row=r_idx + 2, column=c_idx, value=value)
 
-            #for idx, linha in planilha.iterrows():
-                #for coluna in linha.index:
-                    #if Planilhas.planilhaMensal.at[idx, coluna] != linha[coluna]:
-                        #Planilhas.planilhaMensal.at[idx, coluna] = linha[coluna]
-            
-            #Planilhas.planilhaMensal.to_excel('Planilha ALTERADA.xlsx', index=False)
-            #ws = Planilhas.planilhaMensal.active
-            #ws.save('planilha mudada.xlsx')
+            # planilhaMensalFormatada.save('planilha mudada teste.xlsx')
+            # print('deu tudo certo')
 
-            #novaJanela.destroy()
+            novaJanela.destroy()
 
-        #novaJanela.protocol('WM_DELETE_WINDOW', fechaJanela)
+        novaJanela.protocol('WM_DELETE_WINDOW', fechaJanela)
 
 def processaPlanilhas():
     nomesDuplicados, planilhasMescladas = Planilhas.processaPlanilhas()
