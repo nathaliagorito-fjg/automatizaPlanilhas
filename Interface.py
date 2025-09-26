@@ -121,10 +121,8 @@ labelTitulo.pack(pady=15)
 
 infos = """
     Este programa realiza:
-    1. Elimina nomes da planilha mensal que não estejam na planilha minibio
-    2. Elimina da planilha mensal registros antigos de uma mesma pessoa
-    3. Exibe registros de ambas planilhas que estejam com valores diferentes para a coluna ORGAO_ENTIDADE
-    4. Salva em uma nova planilha as alterações realizadas
+    1. Elimina nomes da planilha mensal que não estejam na planilha minibio e salva em uma nova
+    2. Exibe registros de ambas planilhas que estejam com valores diferentes para a coluna ORGAO_ENTIDADE
     É necessário inserir as duas planilhas para que o processamento ocorra
 """
 
