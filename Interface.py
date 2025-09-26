@@ -17,6 +17,10 @@ def armazenaImagem(diretorioAtual):
 def carregaPlanilhas(tipo):
     diretorio = askopenfilename(filetypes=[('Excel files', '*.xlsx *.xls')])
 
+    def testaPlanilhasCarregadas():
+        if Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None:
+            buttonProcessa.config(state='normal')
+
     if not diretorio:
         return
     
@@ -27,12 +31,14 @@ def carregaPlanilhas(tipo):
         else:
             Planilhas.planilhaMensal = pd.read_excel(diretorio)
 
-            global planilhaMensalAtiva, planilhaMensalFormatada
+            # global planilhaMensalAtiva, planilhaMensalFormatada
             
-            planilhaMensalFormatada = load_workbook(diretorio)
-            planilhaMensalAtiva = planilhaMensalFormatada.active
+            # planilhaMensalFormatada = load_workbook(diretorio)
+            # planilhaMensalAtiva = planilhaMensalFormatada.active
 
             labelMensagem['text'] = 'Planilha MENSAL carregada.'
+
+            testaPlanilhasCarregadas()
     elif tipo == 'minibio':
         if 'minibio' not in diretorio.lower():
             labelMensagem['text'] = 'Planilha errada.'
@@ -41,6 +47,8 @@ def carregaPlanilhas(tipo):
             Planilhas.planilhaMinibio = pd.read_excel(diretorio)
 
             labelMensagem['text'] = 'Planilha MINIBIO carregada.'
+
+            testaPlanilhasCarregadas()
 
 def mostraPlanilha(planilha, titulo):
     if planilha is None or planilha.empty:
@@ -73,6 +81,7 @@ def mostraPlanilha(planilha, titulo):
 
 def processaPlanilhas():
     nomesDuplicados, planilhasMescladas = Planilhas.processaPlanilhas()
+
     if nomesDuplicados is None:
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
@@ -87,6 +96,7 @@ def processaPlanilhas():
 def resetaTudo():
     buttonMensal.config(state='normal')
     buttonMinibio.config(state='normal')
+    buttonProcessa.config(state='disabled')
     labelMensagem['text'] = ''
 
     #janela.destroy()
@@ -129,6 +139,7 @@ buttonMinibio = Button(janela, text='Carregar Minibio', command=lambda:carregaPl
 buttonMinibio.pack(pady=5)
 
 buttonProcessa = Button(janela, text='Processar Planilhas', command=lambda:processaPlanilhas() if (Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None) else labelMensagem.config(text='Carregue as duas planilhas primeiro!'))
+buttonProcessa.config(state='disabled')
 buttonProcessa.pack(pady=5)
 
 labelMensagem = Label(janela, text='')

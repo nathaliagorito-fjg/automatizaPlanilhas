@@ -1,6 +1,5 @@
 import pandas as pd
 import unicodedata as uni
-import Interface
 from openpyxl import load_workbook
 
 planilhaMensal = None
@@ -124,11 +123,5 @@ def processaPlanilhas():
 
     #Salva planilha mensal com as alterações realizadas
     #planilhaMensal.to_excel('Planilha Mensal - eliminados registros de ex líderes.xlsx')
-    for r_idx, row in planilhaMensal.iterrows():
-        for c_idx, value in enumerate(row, start=1):
-            Interface.planilhaMensalAtiva.cell(row=r_idx + 2, column=c_idx, value=value)
-
-    
-    Interface.planilhaMensalFormatada.save('planilha mudada teste.xlsx')
 
     return nomesDuplicados, planilhasMescladas
