@@ -124,4 +124,4 @@ def processaPlanilhas():
     #Salva planilha mensal com as alterações realizadas
     planilhaMensal.to_excel('Planilha Mensal - eliminados registros de ex líderes.xlsx')
 
-    return nomesDuplicados, planilhasMescladas
+    return nomesDuplicados, planilhasMescladas, planilhaMensal

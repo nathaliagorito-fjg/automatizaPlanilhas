@@ -65,21 +65,22 @@ def mostraPlanilha(planilha, titulo):
         tabela = Table(framePlanilha, dataframe=planilha)
         tabela.show()
 
-        def fechaJanela():
-            planilha.loc[:] = tabela.model.df
+        # def fechaJanela():
+        #     planilha.loc[:] = tabela.model.df
 
-            for indiceLinha, linha in planilha.iterrows():
-                for indiceColuna, coluna in enumerate(linha, start=1):
-                    planilhaMensalAtiva.cell(linha=indiceLinha + 2, column=indiceColuna, value=coluna)
+        #     for indiceLinha, linha in Planilhas.planilhaMensal.iterrows():
+        #         for indiceColuna, coluna in enumerate(linha, start=1):
+        #             planilhaMensalAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
+        #             print('deu certo')
 
-            planilhaMensalFormatada.save('planilha mudada teste.xlsx')
+        #     planilhaMensalFormatada.save('planilha mudada teste.xlsx')
 
-            novaJanela.destroy()
+        #     novaJanela.destroy()
 
-        novaJanela.protocol('WM_DELETE_WINDOW', fechaJanela)
+        # novaJanela.protocol('WM_DELETE_WINDOW', fechaJanela)
 
 def processaPlanilhas():
-    nomesDuplicados, planilhasMescladas = Planilhas.processaPlanilhas()
+    nomesDuplicados, planilhasMescladas, planilhaAlterada = Planilhas.processaPlanilhas()
 
     if nomesDuplicados is None:
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
@@ -91,6 +92,17 @@ def processaPlanilhas():
     mostraPlanilha(nomesDuplicados[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
     #mostraPlanilha(datasDuplicadas[['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']], 'Datas Duplicadas')
     mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
+
+    
+    for row in planilhaMensalAtiva.iter_rows():
+        for cell in row:
+            cell.value = None
+            
+    for indiceLinha, linha in planilhaAlterada.iterrows():
+        for indiceColuna, coluna in enumerate(linha, start=1):
+            planilhaMensalAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
+            
+    planilhaMensalFormatada.save('planilha mudada teste.xlsx')
 
 def resetaTudo():
     buttonMensal.config(state='normal')
