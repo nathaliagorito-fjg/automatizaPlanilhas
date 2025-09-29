@@ -31,10 +31,10 @@ def carregaPlanilhas(tipo):
         else:
             Planilhas.planilhaMensal = pd.read_excel(diretorio)
 
-            # global planilhaMensalAtiva, planilhaMensalFormatada
+            global planilhaMensalAtiva, planilhaMensalFormatada
             
-            # planilhaMensalFormatada = load_workbook(diretorio)
-            # planilhaMensalAtiva = planilhaMensalFormatada.active
+            planilhaMensalFormatada = load_workbook(diretorio)
+            planilhaMensalAtiva = planilhaMensalFormatada.active
 
             labelMensagem['text'] = 'Planilha MENSAL carregada.'
 
@@ -66,14 +66,13 @@ def mostraPlanilha(planilha, titulo):
         tabela.show()
 
         def fechaJanela():
-            #planilha.loc[:] = tabela.model.df
+            planilha.loc[:] = tabela.model.df
 
-            # for r_idx, row in Planilhas.planilhaMensal.iterrows():
-            #     for c_idx, value in enumerate(row, start=1):
-            #         planilhaMensalAtiva.cell(row=r_idx + 2, column=c_idx, value=value)
+            for indiceLinha, linha in planilha.iterrows():
+                for indiceColuna, coluna in enumerate(linha, start=1):
+                    planilhaMensalAtiva.cell(linha=indiceLinha + 2, column=indiceColuna, value=coluna)
 
-            # planilhaMensalFormatada.save('planilha mudada teste.xlsx')
-            # print('deu tudo certo')
+            planilhaMensalFormatada.save('planilha mudada teste.xlsx')
 
             novaJanela.destroy()
 
