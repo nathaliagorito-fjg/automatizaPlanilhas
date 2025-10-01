@@ -104,7 +104,7 @@ def processaPlanilhas():
     planilhaMensal['INICIO_LOTACAO'] = planilhaMensal['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
     planilhaMinibio['ORGAO_ENTIDADE'] = planilhaMinibio['ORGAO_ENTIDADE'].apply(normalizaTexto)
 
-    #Elimina nomes que não estão na minibio
+    #Elimina nomes que não estão na planilhaMinibio
     planilhaMensal = planilhaMensal[planilhaMensal['NOME'].isin(planilhaMinibio['NOME'])]
 
     #Salva valores duplicados
@@ -120,8 +120,5 @@ def processaPlanilhas():
     #Junta as duas planilhas, compara se o valor da coluna ORGAO_ENTIDADE é igual ao da coluna SIGLA e cria um txt com os que forem diferentes
     planilhasMescladas = planilhaMensal.merge(planilhaMinibio, on = 'NOME', how = 'inner', suffixes = ('_MENSAL', '_MINIBIO'))
     planilhasMescladas['IGUAIS'] = planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA']
-
-    #Salva planilha mensal com as alterações realizadas
-    planilhaMensal.to_excel('Planilha Mensal - eliminados registros de ex líderes.xlsx')
 
     return nomesDuplicados, planilhasMescladas, planilhaMensal

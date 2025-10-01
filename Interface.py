@@ -65,20 +65,6 @@ def mostraPlanilha(planilha, titulo):
         tabela = Table(framePlanilha, dataframe=planilha)
         tabela.show()
 
-        # def fechaJanela():
-        #     planilha.loc[:] = tabela.model.df
-
-        #     for indiceLinha, linha in Planilhas.planilhaMensal.iterrows():
-        #         for indiceColuna, coluna in enumerate(linha, start=1):
-        #             planilhaMensalAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
-        #             print('deu certo')
-
-        #     planilhaMensalFormatada.save('planilha mudada teste.xlsx')
-
-        #     novaJanela.destroy()
-
-        # novaJanela.protocol('WM_DELETE_WINDOW', fechaJanela)
-
 def processaPlanilhas():
     nomesDuplicados, planilhasMescladas, planilhaAlterada = Planilhas.processaPlanilhas()
 
@@ -93,24 +79,30 @@ def processaPlanilhas():
     #mostraPlanilha(datasDuplicadas[['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']], 'Datas Duplicadas')
     mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
 
+    #Salva a planilhaMensal sem os nomes que não estão na planilhaMinibio e com a formatação original
+    for linha in planilhaMensalAtiva.iter_rows():
+        for coluna in linha:
+            coluna.value = None
     
-    for row in planilhaMensalAtiva.iter_rows():
-        for cell in row:
-            cell.value = None
-            
+    for indiceColuna, coluna in enumerate(planilhaAlterada.columns, start=1):
+        planilhaMensalAtiva.cell(row=1, column=indiceColuna, value=coluna)
+
     for indiceLinha, linha in planilhaAlterada.iterrows():
         for indiceColuna, coluna in enumerate(linha, start=1):
             planilhaMensalAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
-            
-    planilhaMensalFormatada.save('planilha mudada teste.xlsx')
+
+    for i in range(planilhaMensalAtiva.max_row, 1, -1):
+        if planilhaMensalAtiva.cell(row=i, column=1).value is None:
+            planilhaMensalAtiva.delete_rows(i)
+        
+    planilhaMensalFormatada.save('Planilha Mensal - eliminados registros de ex líderes.xlsx')
 
 def resetaTudo():
     buttonMensal.config(state='normal')
     buttonMinibio.config(state='normal')
     buttonProcessa.config(state='disabled')
-    labelMensagem['text'] = ''
 
-    #janela.destroy()
+    labelMensagem['text'] = ''
 
 janela = Tk()
 janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
