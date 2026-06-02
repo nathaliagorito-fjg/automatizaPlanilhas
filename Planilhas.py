@@ -116,4 +116,5 @@ def processaHistorico():
         return None
 
     valoresDuplicados = planilhaErgon[planilhaErgon.duplicated(subset=['CPF'], keep=False)]
+    
     return valoresDuplicados

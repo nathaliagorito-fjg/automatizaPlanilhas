@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 from pandastable import Table
 from tkinter import *
 from tkinter.filedialog import askopenfilename
+from tkinter import messagebox
 
 def armazenaImagem(diretorioAtual):
     try:
@@ -72,7 +73,7 @@ def carregaPlanilhas(tipo):
             
         testaPlanilhasHistoricoCarregadas()
 
-def mostraPlanilha(planilha, titulo):
+def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
     if planilha is None or planilha.empty:
         labelMensagem['text'] = 'Não há dados para exibir.'
     else:
@@ -86,6 +87,9 @@ def mostraPlanilha(planilha, titulo):
 
         tabela = Table(framePlanilha, dataframe=planilha)
         tabela.show()
+
+        if fechaJanelaDadosDuplicados:
+            novaJanela.protocol("WM_DELETE_WINDOW", lambda:fechaJanelaDadosDuplicados(novaJanela))
 
 def processaPlanilhas():
     nomesDuplicados, planilhasMescladas, planilhaAlterada = Planilhas.processaPlanilhas()
@@ -125,21 +129,30 @@ def processaHistorico():
         return
 
     colunas_exibicao = ['NOME', 'CPF', 'CARGO', 'FUNCAO', 'NOME_SETOR', 'SIGLA_ORGAO_ENTIDADE']
-    mostraPlanilha(duplicados[colunas_exibicao], 'Valores Duplicados por CPF')
 
-    wb = load_workbook(Planilhas.diretorioHistorico)
-    ws = wb.active
+    def confirmarSalvamento(janelaPopup):
+        resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores duplicados no histórico da minibio?")
+        
+        if resposta:  
+            wb = load_workbook(Planilhas.diretorioHistorico)
+            ws = wb.active
 
-    cabecalho = [cell.value for cell in ws[1]]
+            cabecalho = [cell.value for cell in ws[1]]
 
-    for _, linha in duplicados.iterrows():
-        nova_linha = []
-        for coluna in cabecalho:
-            nova_linha.append(linha.get(coluna, None))
-        ws.append(nova_linha)
+            for _, linha in duplicados.iterrows():
+                novaLinha = []
+                for coluna in cabecalho:
+                    novaLinha.append(linha.get(coluna, None))
+                ws.append(novaLinha)
 
-    wb.save(Planilhas.diretorioHistorico)
-    labelMensagem['text'] = 'Histórico atualizado com sucesso!'
+            wb.save(Planilhas.diretorioHistorico)
+            labelMensagem['text'] = 'Histórico atualizado com sucesso!'
+        else:
+            labelMensagem['text'] = 'Ação cancelada. Dados não foram salvos.'
+        
+        janelaPopup.destroy()  
+
+    mostraPlanilha(duplicados[colunas_exibicao], 'Valores Duplicados por CPF', fechaJanelaDadosDuplicados=confirmarSalvamento)
 
 def resetaTudo():
     buttonMensal.config(state='normal')
@@ -152,7 +165,7 @@ def resetaTudo():
 
 janela = Tk()
 janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
-janela.geometry('550x580')
+janela.geometry('550x400')
 janela.resizable(False, False)
 janela.title('Processador de Planilhas Lideres Cariocas')
 janela.option_add('*Acivebackground', 'black')
@@ -177,9 +190,11 @@ labelInfo = Label(janela, text=infos)
 labelInfo.config(bg=labelInfo.master.cget('bg'), bd=0, justify='center', relief='flat', width=0)
 labelInfo.pack(pady=5)
 
-# Seção Líderes Mensais
-secaoLideres = LabelFrame(janela, text="Líderes Mensais", bg='white', padx=10, pady=10)
-secaoLideres.pack(pady=10, fill="x", padx=20)
+frameSecoes = Frame(janela, bg='white')
+frameSecoes.pack(pady=10)
+
+secaoLideres = LabelFrame(frameSecoes, text="Líderes Mensais", bg='white', padx=10, pady=10, labelanchor='n')
+secaoLideres.pack(padx=10, side="left")
 
 buttonMensal = Button(secaoLideres, text='Carregar Mensal', command=lambda:carregaPlanilhas('mensal'))
 buttonMensal.pack(pady=3)
@@ -191,9 +206,8 @@ buttonProcessa = Button(secaoLideres, text='Processar Planilhas', command=lambda
 buttonProcessa.config(state='disabled')
 buttonProcessa.pack(pady=3)
 
-# Seção Histórico Minibio
-secaoHistorico = LabelFrame(janela, text="Histórico Minibio", bg='white', padx=10, pady=10)
-secaoHistorico.pack(pady=10, fill="x", padx=20)
+secaoHistorico = LabelFrame(frameSecoes, text="Histórico Minibio", bg='white', padx=10, pady=10, labelanchor='n')
+secaoHistorico.pack(padx=10, side="left")
 
 buttonErgon = Button(secaoHistorico, text='Carregar Ergon', command=lambda:carregaPlanilhas('ergon'))
 buttonErgon.pack(pady=3)
@@ -207,12 +221,52 @@ buttonProcessaHist.pack(pady=3)
 
 labelMensagem = Label(janela, text='')
 labelMensagem.config(bg=labelMensagem.master.cget('bg'), bd=0, relief='flat', width=40)
-labelMensagem.pack(pady=10)
+labelMensagem.pack(pady=15)
 
 diretorioImagem = armazenaImagem('iconeRefresh.png')
 imagemButtonRefresh = PhotoImage(file=diretorioImagem)
 buttonRefresh = Button(janela, image=imagemButtonRefresh, command=lambda:resetaTudo())
 buttonRefresh.config(bg=buttonRefresh.master.cget('bg'), bd=0, relief='flat', width=30)
-buttonRefresh.pack(side=RIGHT, padx=10, pady=10)
+buttonRefresh.place(relx=1.0, rely=1.0, anchor='se', x=-15, y=-15)
 
 janela.mainloop()
+
+# # Seção Líderes Mensais
+# secaoLideres = LabelFrame(janela, text="Líderes Mensais", bg='white', padx=10, pady=10)
+# secaoLideres.pack(padx=5, pady=10, side="left")
+
+# buttonMensal = Button(secaoLideres, text='Carregar Mensal', command=lambda:carregaPlanilhas('mensal'))
+# buttonMensal.pack(pady=3)
+
+# buttonMinibio = Button(secaoLideres, text='Carregar Minibio', command=lambda:carregaPlanilhas('minibio'))
+# buttonMinibio.pack(pady=3)
+
+# buttonProcessa = Button(secaoLideres, text='Processar Planilhas', command=lambda:processaPlanilhas())
+# buttonProcessa.config(state='disabled')
+# buttonProcessa.pack(pady=3)
+
+# # Seção Histórico Minibio
+# secaoHistorico = LabelFrame(janela, text="Histórico Minibio", bg='white', padx=10, pady=10)
+# secaoHistorico.pack(padx=5, pady=10, side="right")
+
+# buttonErgon = Button(secaoHistorico, text='Carregar Ergon', command=lambda:carregaPlanilhas('ergon'))
+# buttonErgon.pack(pady=3)
+
+# buttonHist = Button(secaoHistorico, text='Carregar Histórico', command=lambda:carregaPlanilhas('historico'))
+# buttonHist.pack(pady=3)
+
+# buttonProcessaHist = Button(secaoHistorico, text='Processar Planilha', command=lambda:processaHistorico())
+# buttonProcessaHist.config(state='disabled')
+# buttonProcessaHist.pack(pady=3)
+
+# labelMensagem = Label(janela, text='')
+# labelMensagem.config(bg=labelMensagem.master.cget('bg'), bd=0, relief='flat', width=40)
+# labelMensagem.pack(pady=10)
+
+# diretorioImagem = armazenaImagem('iconeRefresh.png')
+# imagemButtonRefresh = PhotoImage(file=diretorioImagem)
+# buttonRefresh = Button(janela, image=imagemButtonRefresh, command=lambda:resetaTudo())
+# buttonRefresh.config(bg=buttonRefresh.master.cget('bg'), bd=0, relief='flat', width=30)
+# buttonRefresh.pack(side=RIGHT, padx=10, pady=10)
+
+# janela.mainloop()
