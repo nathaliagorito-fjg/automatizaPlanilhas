@@ -89,7 +89,7 @@ def defineSiglas():
   criaSigla('Feiras, Exposições e Congressos', 'RIOCENTRO')
   criaSigla('Fomento do Município', 'INVEST.RIO')
 
-def processaPlanilhas():
+def processaPlanilhasLideresMensais():
     global planilhaMensal, planilhaMinibio
 
     if planilhaMensal is None or planilhaMinibio is None:
@@ -109,12 +109,12 @@ def processaPlanilhas():
 
     return nomesDuplicados, planilhasMescladas, planilhaMensal
 
-def processaHistorico():
+def processaPlanilhasHistoricoMinibio():
     global planilhaErgon, planilhaHistorico
 
     if planilhaErgon is None or planilhaHistorico is None:
         return None
 
     valoresDuplicados = planilhaErgon[planilhaErgon.duplicated(subset=['CPF'], keep=False)]
-    
+
     return valoresDuplicados

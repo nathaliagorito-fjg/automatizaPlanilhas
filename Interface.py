@@ -21,11 +21,11 @@ def carregaPlanilhas(tipo):
     if not diretorio:
         return
     
-    def testaPlanilhasCarregadas():
+    def testaPlanilhasLideresMensaisCarregadas():
         if Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None:
             buttonProcessa.config(state='normal')
 
-    def testaPlanilhasHistoricoCarregadas():
+    def testaPlanilhasHistoricoMinibioCarregadas():
         if Planilhas.planilhaErgon is not None and Planilhas.planilhaHistorico is not None:
             buttonProcessaHist.config(state='normal')
 
@@ -50,28 +50,28 @@ def carregaPlanilhas(tipo):
         planilhaMensalFormatada = load_workbook(diretorio)
         planilhaMensalAtiva = planilhaMensalFormatada.active
 
-        labelMensagem['text'] = 'Planilha MENSAL carregada.'
+        labelMensagem['text'] = 'Planilha MENSAL DOS LÍDERES carregada.'
 
-        testaPlanilhasCarregadas()
+        testaPlanilhasLideresMensaisCarregadas()
     elif tipo == 'minibio':
             Planilhas.planilhaMinibio = pd.read_excel(diretorio)
 
             labelMensagem['text'] = 'Planilha MINIBIO carregada.'
 
-            testaPlanilhasCarregadas()
+            testaPlanilhasLideresMensaisCarregadas()
     elif tipo == 'ergon':
         Planilhas.planilhaErgon = pd.read_excel(diretorio)
 
         labelMensagem['text'] = 'Planilha ERGON carregada.'
 
-        testaPlanilhasHistoricoCarregadas()
+        testaPlanilhasHistoricoMinibioCarregadas()
     elif tipo == 'historico':
         Planilhas.planilhaHistorico = pd.read_excel(diretorio)
         Planilhas.diretorioHistorico = diretorio
             
-        labelMensagem['text'] = 'Planilha HISTÓRICO carregada.'
+        labelMensagem['text'] = 'Planilha HISTÓRICO DA MINIBIO carregada.'
             
-        testaPlanilhasHistoricoCarregadas()
+        testaPlanilhasHistoricoMinibioCarregadas()
 
 def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
     if planilha is None or planilha.empty:
@@ -91,8 +91,8 @@ def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
         if fechaJanelaDadosDuplicados:
             novaJanela.protocol("WM_DELETE_WINDOW", lambda:fechaJanelaDadosDuplicados(novaJanela))
 
-def processaPlanilhas():
-    nomesDuplicados, planilhasMescladas, planilhaAlterada = Planilhas.processaPlanilhas()
+def processaPlanilhasLideresMensais():
+    nomesDuplicados, planilhasMescladas, planilhaAlterada = Planilhas.processaPlanilhasLideresMensais()
 
     if nomesDuplicados is None:
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
@@ -121,8 +121,8 @@ def processaPlanilhas():
         
     planilhaMensalFormatada.save('Planilha Mensal - eliminados registros de ex líderes.xlsx')
 
-def processaHistorico():
-    duplicados = Planilhas.processaHistorico()
+def processaPlanilhasHistoricoMinibio():
+    duplicados = Planilhas.processaPlanilhasHistoricoMinibio()
 
     if duplicados is None:
         labelMensagem['text'] = 'Carregue as planilhas do Histórico primeiro!'
@@ -163,9 +163,25 @@ def resetaTudo():
     buttonProcessaHist.config(state='disabled')
     labelMensagem['text'] = ''
 
+# def abrir_modal_info():
+#     modal = Toplevel(janela)
+#     modal.title('Informações do Sistema')
+#     modal.geometry('520x320')
+#     modal.resizable(False, False)
+#     modal.grab_set()  # Bloqueia a janela principal até fechar o modal
+#     modal.config(bg='white')
+
+#     # Alinha as opções de estilo do modal com a identidade do app
+#     Label(modal, text='Instruções de Processamento', font=('Arial', 11, 'bold'), bg='white').pack(pady=15)
+    
+#     lbl_texto = Label(modal, text=infos, justify='left', bg='white', font=('Arial', 9), anchor='w')
+#     lbl_texto.pack(padx=25, fill='both', expand=True)
+    
+#     Button(modal, text='Fechar', command=modal.destroy, width=15).pack(pady=15)
+
 janela = Tk()
 janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
-janela.geometry('550x400')
+janela.geometry('1000x600')
 janela.resizable(False, False)
 janela.title('Processador de Planilhas Lideres Cariocas')
 janela.option_add('*Acivebackground', 'black')
@@ -182,19 +198,42 @@ labelTitulo.config(bg=labelTitulo.master.cget('bg'), bd=0, font=10, relief='flat
 labelTitulo.pack(pady=10)
 
 infos = """
-    Este programa realiza o processamento e gerenciamento 
-    das planilhas de Líderes Mensais e do Histórico Minibio.
+    1. Elimina registros da planilha mensal que não estejam na planilha minibio;
+    2. Salva uma nova planilha sem esses registros eliminados;
+    3. Exibe registros de ambas planilhas, mensal e minibio, que estejam com valores diferentes para a coluna ORGAO_ENTIDADE.
+
+    1. Exibe registros dos CPFs duplicados da planilha do Ergon que estejam com valores diferentes para as colunas CARGO, FUNCAO, NOME_SETOR, SIGLA_ORGAO_ENTIDADE;
+    2. Salva os registros duplicados na planilha do histórico da minibio.
 """
 
-labelInfo = Label(janela, text=infos)
-labelInfo.config(bg=labelInfo.master.cget('bg'), bd=0, justify='center', relief='flat', width=0)
-labelInfo.pack(pady=5)
+infosMinibio = """
+    1. Elimina registros da planilha mensal que não estejam na planilha minibio;
+    2. Salva uma nova planilha sem esses registros eliminados;
+    3. Exibe registros de ambas planilhas, mensal e minibio, que estejam com valores diferentes para a coluna ORGAO_ENTIDADE.
+"""
+
+infosMensal = """
+    1. Exibe registros dos CPFs duplicados da planilha do Ergon que estejam com valores diferentes para as colunas CARGO, FUNCAO, NOME_SETOR, SIGLA_ORGAO_ENTIDADE;
+    2. Salva os registros duplicados na planilha do histórico da minibio.
+"""
+
+# buttonAjuda = Button(janela, text='Como Funciona?', command=abrir_modal_info, width=15)
+# buttonAjuda.pack(pady=5)
+
+# infos = Label(janela, text=infos)
+# infos.config(bg=infos.master.cget('bg'), bd=0, justify='left', relief='flat', width=0)
+# infos.pack(pady=5)
 
 frameSecoes = Frame(janela, bg='white')
 frameSecoes.pack(pady=10)
 
-secaoLideres = LabelFrame(frameSecoes, text="Líderes Mensais", bg='white', padx=10, pady=10, labelanchor='n')
-secaoLideres.pack(padx=10, side="left")
+secaoLideres = LabelFrame(frameSecoes, text="Líderes Mensais", bg='white', padx=5, pady=10, labelanchor='n', width=350, height=300)
+# secaoLideres.pack(padx=10, side="left")
+secaoLideres.pack_propagate(False)
+
+infosMinibio = Label(secaoLideres, text=infosMinibio)
+infosMinibio.config(bg=infosMinibio.master.cget('bg'), bd=0, justify='left', relief='flat', width=0)
+infosMinibio.pack(pady=5)
 
 buttonMensal = Button(secaoLideres, text='Carregar Mensal', command=lambda:carregaPlanilhas('mensal'))
 buttonMensal.pack(pady=3)
@@ -202,12 +241,17 @@ buttonMensal.pack(pady=3)
 buttonMinibio = Button(secaoLideres, text='Carregar Minibio', command=lambda:carregaPlanilhas('minibio'))
 buttonMinibio.pack(pady=3)
 
-buttonProcessa = Button(secaoLideres, text='Processar Planilhas', command=lambda:processaPlanilhas())
+buttonProcessa = Button(secaoLideres, text='Processar Planilhas', command=lambda:processaPlanilhasLideresMensais())
 buttonProcessa.config(state='disabled')
 buttonProcessa.pack(pady=3)
 
-secaoHistorico = LabelFrame(frameSecoes, text="Histórico Minibio", bg='white', padx=10, pady=10, labelanchor='n')
-secaoHistorico.pack(padx=10, side="left")
+secaoHistorico = LabelFrame(frameSecoes, text="Histórico Minibio", bg='white', padx=5, pady=10, labelanchor='n', width=350, height=300)
+# secaoHistorico.pack(padx=10, side="right")
+secaoHistorico.pack_propagate(False)
+
+infosMensal = Label(secaoHistorico, text=infosMensal)
+infosMensal.config(bg=infosMensal.master.cget('bg'), bd=0, justify='left', relief='flat', width=0)
+infosMensal.pack(pady=5)
 
 buttonErgon = Button(secaoHistorico, text='Carregar Ergon', command=lambda:carregaPlanilhas('ergon'))
 buttonErgon.pack(pady=3)
@@ -215,7 +259,7 @@ buttonErgon.pack(pady=3)
 buttonHist = Button(secaoHistorico, text='Carregar Histórico', command=lambda:carregaPlanilhas('historico'))
 buttonHist.pack(pady=3)
 
-buttonProcessaHist = Button(secaoHistorico, text='Processar Planilha', command=lambda:processaHistorico())
+buttonProcessaHist = Button(secaoHistorico, text='Processar Planilha', command=lambda:processaPlanilhasHistoricoMinibio())
 buttonProcessaHist.config(state='disabled')
 buttonProcessaHist.pack(pady=3)
 
