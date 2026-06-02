@@ -17,42 +17,138 @@ def armazenaImagem(diretorioAtual):
 def carregaPlanilhas(tipo):
     diretorio = askopenfilename(filetypes=[('Excel files', '*.xlsx *.xls')])
 
+    if not diretorio:
+        return
+    
     def testaPlanilhasCarregadas():
         if Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None:
             buttonProcessa.config(state='normal')
 
-    if not diretorio:
+    def testaPlanilhasHistoricoCarregadas():
+        if Planilhas.planilhaErgon is not None and Planilhas.planilhaHistorico is not None:
+            buttonProcessaHist.config(state='normal')
+
+    def validaTipoPlanilha(tipo):
+        tipos = {'mensal': ['mensal'], 'minibio': ['minibio'], 'historico': ['historico', 'histórico'], 'ergon': ['ergon']}
+
+        nomeArquivo = diretorio.lower()
+
+        return any(palavra in nomeArquivo for palavra in tipos.get(tipo, []))
+
+    if not validaTipoPlanilha(tipo):
+        labelMensagem['text'] = 'Planilha errada.'
+        labelMensagem.after(5000, lambda: labelMensagem.config(text=''))
+
         return
-    
+
     if tipo == 'mensal':
-        if 'mensal' not in diretorio.lower():
-            labelMensagem['text'] = 'Planilha errada.'
-            labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
-        else:
-            Planilhas.planilhaMensal = pd.read_excel(diretorio)
+        Planilhas.planilhaMensal = pd.read_excel(diretorio)
 
-            global planilhaMensalAtiva, planilhaMensalFormatada
-            
-            planilhaMensalFormatada = load_workbook(diretorio)
-            planilhaMensalAtiva = planilhaMensalFormatada.active
+        global planilhaMensalAtiva, planilhaMensalFormatada
 
-            labelMensagem['text'] = 'Planilha MENSAL carregada.'
+        planilhaMensalFormatada = load_workbook(diretorio)
+        planilhaMensalAtiva = planilhaMensalFormatada.active
 
-            testaPlanilhasCarregadas()
+        labelMensagem['text'] = 'Planilha MENSAL carregada.'
+
+        testaPlanilhasCarregadas()
     elif tipo == 'minibio':
-        if 'minibio' not in diretorio.lower():
-            labelMensagem['text'] = 'Planilha errada.'
-            labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
-        else:
             Planilhas.planilhaMinibio = pd.read_excel(diretorio)
 
             labelMensagem['text'] = 'Planilha MINIBIO carregada.'
 
             testaPlanilhasCarregadas()
+    elif tipo == 'ergon':
+        Planilhas.planilhaErgon = pd.read_excel(diretorio)
+
+        labelMensagem['text'] = 'Planilha ERGON carregada.'
+
+        testaPlanilhasHistoricoCarregadas()
+    elif tipo == 'historico':
+        Planilhas.planilhaHistorico = pd.read_excel(diretorio)
+        Planilhas.diretorioHistorico = diretorio
+            
+        labelMensagem['text'] = 'Planilha HISTÓRICO carregada.'
+            
+        testaPlanilhasHistoricoCarregadas()
+
+# def carregaPlanilhas(tipo):
+#     diretorio = askopenfilename(filetypes=[('Excel files', '*.xlsx *.xls')])
+
+#     def planilhaErrada():
+#         labelMensagem['text'] = 'Planilha errada.'
+#         labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
+    
+#     def planilhaCerta(planilhaCarregada):
+#         if 'mensal' not in planilhaCarregada.lower() and 'minibio' not in planilhaCarregada.lower():
+#             Planilhas.planilhaCarregada = pd.read_excel(diretorio)
+
+#             labelMensagem['text'] = 'Planilha ERGON carregada.'
+        
+#             testaPlanilhasHistoricoCarregadas()
+
+
+#     if not diretorio:
+#         return
+
+#     def testaPlanilhasCarregadas():
+#         if Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None:
+#             buttonProcessa.config(state='normal')
+
+#     def testaPlanilhasHistoricoCarregadas():
+#         if Planilhas.planilhaErgon is not None and Planilhas.planilhaHistorico is not None:
+#             buttonProcessaHist.config(state='normal')
+    
+#     if tipo == 'mensal':
+#         if 'mensal' not in diretorio.lower():
+#             labelMensagem['text'] = 'Planilha errada.'
+#             labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
+#         else:
+#             Planilhas.planilhaMensal = pd.read_excel(diretorio)
+
+#             global planilhaMensalAtiva, planilhaMensalFormatada
+            
+#             planilhaMensalFormatada = load_workbook(diretorio)
+#             planilhaMensalAtiva = planilhaMensalFormatada.active
+
+#             labelMensagem['text'] = 'Planilha MENSAL carregada.'
+#             testaPlanilhasCarregadas()
+
+#     elif tipo == 'minibio':
+#         if 'minibio' not in diretorio.lower():
+#             labelMensagem['text'] = 'Planilha errada.'
+#             labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
+#         else:
+#             Planilhas.planilhaMinibio = pd.read_excel(diretorio)
+#             labelMensagem['text'] = 'Planilha MINIBIO carregada.'
+#             testaPlanilhasCarregadas()
+
+#     elif tipo == 'ergon':
+#         if 'ergon' not in diretorio.lower():
+#             labelMensagem['text'] = 'Planilha errada.'
+#             labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
+#         else:
+#             Planilhas.planilhaErgon = pd.read_excel(diretorio)
+
+#             labelMensagem['text'] = 'Planilha ERGON carregada.'
+        
+#             testaPlanilhasHistoricoCarregadas()
+
+#     elif tipo == 'historico':
+#         if 'historico' not in diretorio.lower() and 'histórico' not in diretorio.lower():
+#             labelMensagem['text'] = 'Planilha errada.'
+#             labelMensagem.after(5000, lambda:labelMensagem.config(text=''))
+#         else:
+#             Planilhas.planilhaHistorico = pd.read_excel(diretorio)
+#             Planilhas.diretorioHistorico = diretorio
+            
+#             labelMensagem['text'] = 'Planilha HISTÓRICO carregada.'
+            
+#             testaPlanilhasHistoricoCarregadas()
 
 def mostraPlanilha(planilha, titulo):
     if planilha is None or planilha.empty:
-        labelMensagem['text'] = 'Não há planilhas carregadas.'
+        labelMensagem['text'] = 'Não há dados para exibir.'
     else:
         novaJanela = Toplevel(janela)
         novaJanela.title(titulo)
@@ -76,10 +172,8 @@ def processaPlanilhas():
     buttonMinibio.config(state='disabled')
 
     mostraPlanilha(nomesDuplicados[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
-    #mostraPlanilha(datasDuplicadas[['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']], 'Datas Duplicadas')
-    mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
+    mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Different_col')
 
-    #Salva a planilhaMensal sem os nomes que não estão na planilhaMinibio e com a formatação original
     for linha in planilhaMensalAtiva.iter_rows():
         for coluna in linha:
             coluna.value = None
@@ -97,16 +191,42 @@ def processaPlanilhas():
         
     planilhaMensalFormatada.save('Planilha Mensal - eliminados registros de ex líderes.xlsx')
 
+def processaHistorico():
+    duplicados = Planilhas.processaHistorico()
+
+    if duplicados is None:
+        labelMensagem['text'] = 'Carregue as planilhas do Histórico primeiro!'
+        return
+
+    colunas_exibicao = ['NOME', 'CPF', 'CARGO', 'FUNCAO', 'NOME_SETOR', 'SIGLA_ORGAO_ENTIDADE']
+    mostraPlanilha(duplicados[colunas_exibicao], 'Valores Duplicados por CPF')
+
+    wb = load_workbook(Planilhas.diretorioHistorico)
+    ws = wb.active
+
+    cabecalho = [cell.value for cell in ws[1]]
+
+    for _, linha in duplicados.iterrows():
+        nova_linha = []
+        for coluna in cabecalho:
+            nova_linha.append(linha.get(coluna, None))
+        ws.append(nova_linha)
+
+    wb.save(Planilhas.diretorioHistorico)
+    labelMensagem['text'] = 'Histórico atualizado com sucesso!'
+
 def resetaTudo():
     buttonMensal.config(state='normal')
     buttonMinibio.config(state='normal')
     buttonProcessa.config(state='disabled')
-
+    buttonErgon.config(state='normal')
+    buttonHist.config(state='normal')
+    buttonProcessaHist.config(state='disabled')
     labelMensagem['text'] = ''
 
 janela = Tk()
 janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
-janela.geometry('550x400')
+janela.geometry('550x580')
 janela.resizable(False, False)
 janela.title('Processador de Planilhas Lideres Cariocas')
 janela.option_add('*Acivebackground', 'black')
@@ -120,31 +240,47 @@ janela.option_add('*Width', 20)
 
 labelTitulo = Label(janela, text='Processador de Planilhas\nLideres Cariocas')
 labelTitulo.config(bg=labelTitulo.master.cget('bg'), bd=0, font=10, relief='flat', width=30)
-labelTitulo.pack(pady=15)
+labelTitulo.pack(pady=10)
 
 infos = """
-    Este programa realiza:
-    1. Elimina nomes da planilha mensal que não estejam na planilha minibio e salva em uma nova
-    2. Exibe registros de ambas planilhas que estejam com valores diferentes para a coluna ORGAO_ENTIDADE
-    É necessário inserir as duas planilhas para que o processamento ocorra
+    Este programa realiza o processamento e gerenciamento 
+    das planilhas de Líderes Mensais e do Histórico Minibio.
 """
 
 labelInfo = Label(janela, text=infos)
-labelInfo.config(bg=labelInfo.master.cget('bg'), bd=0, justify='left', relief='flat', width=0)
-labelInfo.pack(pady=15)
+labelInfo.config(bg=labelInfo.master.cget('bg'), bd=0, justify='center', relief='flat', width=0)
+labelInfo.pack(pady=5)
 
-buttonMensal = Button(janela, text='Carregar Mensal', command=lambda:carregaPlanilhas('mensal'))
-buttonMensal.pack(pady=5)
+# Seção Líderes Mensais
+secaoLideres = LabelFrame(janela, text="Líderes Mensais", bg='white', padx=10, pady=10)
+secaoLideres.pack(pady=10, fill="x", padx=20)
 
-buttonMinibio = Button(janela, text='Carregar Minibio', command=lambda:carregaPlanilhas('minibio'))
-buttonMinibio.pack(pady=5)
+buttonMensal = Button(secaoLideres, text='Carregar Mensal', command=lambda:carregaPlanilhas('mensal'))
+buttonMensal.pack(pady=3)
 
-buttonProcessa = Button(janela, text='Processar Planilhas', command=lambda:processaPlanilhas() if (Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None) else labelMensagem.config(text='Carregue as duas planilhas primeiro!'))
+buttonMinibio = Button(secaoLideres, text='Carregar Minibio', command=lambda:carregaPlanilhas('minibio'))
+buttonMinibio.pack(pady=3)
+
+buttonProcessa = Button(secaoLideres, text='Processar Planilhas', command=lambda:processaPlanilhas())
 buttonProcessa.config(state='disabled')
-buttonProcessa.pack(pady=5)
+buttonProcessa.pack(pady=3)
+
+# Seção Histórico Minibio
+secaoHistorico = LabelFrame(janela, text="Histórico Minibio", bg='white', padx=10, pady=10)
+secaoHistorico.pack(pady=10, fill="x", padx=20)
+
+buttonErgon = Button(secaoHistorico, text='Carregar Ergon', command=lambda:carregaPlanilhas('ergon'))
+buttonErgon.pack(pady=3)
+
+buttonHist = Button(secaoHistorico, text='Carregar Histórico', command=lambda:carregaPlanilhas('historico'))
+buttonHist.pack(pady=3)
+
+buttonProcessaHist = Button(secaoHistorico, text='Processar Planilha', command=lambda:processaHistorico())
+buttonProcessaHist.config(state='disabled')
+buttonProcessaHist.pack(pady=3)
 
 labelMensagem = Label(janela, text='')
-labelMensagem.config(bg=labelMensagem.master.cget('bg'), bd=0, relief='flat', width=30)
+labelMensagem.config(bg=labelMensagem.master.cget('bg'), bd=0, relief='flat', width=40)
 labelMensagem.pack(pady=10)
 
 diretorioImagem = armazenaImagem('iconeRefresh.png')

@@ -4,6 +4,9 @@ from openpyxl import load_workbook
 
 planilhaMensal = None
 planilhaMinibio = None
+planilhaErgon = None
+planilhaHistorico = None
+diretorioHistorico = None
 
 def normalizaTexto(texto):
     texto = str(texto).upper()
@@ -21,12 +24,9 @@ def criaSigla(palavra, sigla):
         planilhaMensal.loc[planilhaMensal['ORGAO_ENTIDADE'].str.contains(palavra, case=False, na=False), 'SIGLA'] = sigla
 
 def defineSiglas():
-  #Cria coluna com as siglas dos órgãos na planilhaMensal
-  #gabinetes
+  #Gabinete e secretarias
   criaSigla('Gabinete do Prefeito', 'GBP')
   criaSigla('Gabinete do Vice-Prefeito', 'GVP')
-
-  #secretarias
   criaSigla('Casa Civil', 'CVL')
   criaSigla('Governo', 'SMG')
   criaSigla('Coordenação Governamental', 'SMCG')
@@ -64,20 +64,16 @@ def defineSiglas():
   criaSigla('Controladoria Geral', 'CGM-Rio')
   criaSigla('Procuradoria Geral', 'PGM')
 
-  #institutos
+  #Institutos, fundações e empresas
   criaSigla('Previdência e Assistência', 'PREVI-RIO')
   criaSigla('Urbanismo Pereira Passos', 'IPP')
   criaSigla('Guarda Municipal', 'GM-RIO')
-
-  #fundações
   criaSigla('Geotécnica', 'GEO-RIO')
   criaSigla('Águas do Município', 'RIO-ÁGUAS')
   criaSigla('Parques e Jardins', 'FPJ')
   criaSigla('Planetário', 'PLANETÁRIO')
   criaSigla('Jardim Zoológico', 'RIO-ZOO')
   criaSigla('Cidade das Artes', 'CIDADE DAS ARTES')
-
-  #empresas
   criaSigla('Multimeios', 'MULTIRIO')
   criaSigla('Distribuidora de Filmes', 'RIOFILME')
   criaSigla('Informática', 'IPLANRIO')
@@ -97,28 +93,27 @@ def processaPlanilhas():
     global planilhaMensal, planilhaMinibio
 
     if planilhaMensal is None or planilhaMinibio is None:
-        return None, None
+        return None, None, None
 
-    #Configurações iniciais
     pd.set_option('display.max_rows', None)
     planilhaMensal['INICIO_LOTACAO'] = planilhaMensal['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
     planilhaMinibio['ORGAO_ENTIDADE'] = planilhaMinibio['ORGAO_ENTIDADE'].apply(normalizaTexto)
 
-    #Elimina nomes que não estão na planilhaMinibio
     planilhaMensal = planilhaMensal[planilhaMensal['NOME'].isin(planilhaMinibio['NOME'])]
-
-    #Salva valores duplicados
     nomesDuplicados = planilhaMensal[planilhaMensal.duplicated(subset=['NOME'], keep=False)]
-    #datasDuplicadas = planilhaMensal[planilhaMensal.duplicated(subset=['NOME', 'INICIO_LOTACAO'], keep=False)]
-
-    #Remove registros duplicados antigos
-    #registroAntigo = nomesDuplicados.loc[nomesDuplicados.groupby('NOME')['INICIO_LOTACAO'].idxmin()]
-    #planilhaMensal.drop(registroAntigo.loc[~registroAntigo.index.isin(datasDuplicadas.index)].index, inplace=True)
 
     defineSiglas()
 
-    #Junta as duas planilhas, compara se o valor da coluna ORGAO_ENTIDADE é igual ao da coluna SIGLA e cria um txt com os que forem diferentes
     planilhasMescladas = planilhaMensal.merge(planilhaMinibio, on = 'NOME', how = 'inner', suffixes = ('_MENSAL', '_MINIBIO'))
     planilhasMescladas['IGUAIS'] = planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA']
 
     return nomesDuplicados, planilhasMescladas, planilhaMensal
+
+def processaHistorico():
+    global planilhaErgon, planilhaHistorico
+
+    if planilhaErgon is None or planilhaHistorico is None:
+        return None
+
+    valoresDuplicados = planilhaErgon[planilhaErgon.duplicated(subset=['CPF'], keep=False)]
+    return valoresDuplicados
