@@ -96,6 +96,7 @@ def processaPlanilhasLideresMensais():
         return None, None, None
 
     pd.set_option('display.max_rows', None)
+    planilhaMensal['INICIO_LOTACAO'] = pd.to_datetime(planilhaMensal['INICIO_LOTACAO'], errors='coerce')
     planilhaMensal['INICIO_LOTACAO'] = planilhaMensal['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
     planilhaMinibio['ORGAO_ENTIDADE'] = planilhaMinibio['ORGAO_ENTIDADE'].apply(normalizaTexto)
 
