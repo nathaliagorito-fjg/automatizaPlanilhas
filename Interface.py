@@ -219,7 +219,7 @@ buttonPlanilhaMensal.pack(pady=5)
 buttonPlanilhaMinibio = Button(secaoLideresMensais, text='👥 Planilha Minibio', command=lambda: carregaPlanilhas('minibio'), **estiloBotao)
 buttonPlanilhaMinibio.pack(pady=5)
 
-buttonProcessaLideres = Button(secaoLideresMensais, text='⚙ Processar Planilhas', command=lambda: processaPlanilhasLideresMensais(), **estiloBotao)
+buttonProcessaLideres = Button(secaoLideresMensais, text='⚙️ Processar Planilhas', command=lambda: processaPlanilhasLideresMensais(), **estiloBotao)
 buttonProcessaLideres.config(state='disabled')
 buttonProcessaLideres.pack(pady=5)
 
@@ -238,10 +238,10 @@ Label(secaoHistoricoMinibio, text=infosHistoricoMinibio, bg=corCard, fg=corTexto
 
 buttonPlanilhaErgon = Button(secaoHistoricoMinibio, text='💼 Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
 buttonPlanilhaErgon.pack(pady=5)
-buttonPlanilhaHistorico = Button(secaoHistoricoMinibio, text='📄 Planilha Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
+buttonPlanilhaHistorico = Button(secaoHistoricoMinibio, text='🕘 Planilha Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
 buttonPlanilhaHistorico.pack(pady=5)
 
-buttonProcessaHistorico = Button(secaoHistoricoMinibio, text='⚙ Processar Planilha', command=lambda: processaPlanilhasHistoricoMinibio(), **estiloBotao)
+buttonProcessaHistorico = Button(secaoHistoricoMinibio, text='⚙️ Processar Planilha', command=lambda: processaPlanilhasHistoricoMinibio(), **estiloBotao)
 buttonProcessaHistorico.config(state='disabled')
 buttonProcessaHistorico.pack(pady=5)
 
@@ -249,7 +249,7 @@ buttonProcessaHistorico.pack(pady=5)
 labelMensagem = Label(janela, bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 10, 'bold'))
 labelMensagem.pack(pady=20)
 
-buttonRefresh = Button(janela, text='↻', command=lambda: resetaTudo(), bg=corAzul, fg='white', activebackground=corAzulEscuro, activeforeground='white', font=('Segoe UI', 18, 'bold'), relief='flat', bd=0, width=3, height=1, cursor='hand2')
-buttonRefresh.place(relx=1.0, rely=1.0, x=-25, y=-25, anchor='se')
+buttonRefresh = Button(janela, text='↻', command=lambda: resetaTudo(), fg=corAzul, activeforeground=corAzulEscuro, font=('Segoe UI', 25, 'bold'), relief='flat', bd=0, width=3, height=1, cursor='hand2')
+buttonRefresh.place(relx=1.0, rely=1.0, x=-25, y=-20, anchor='se')
 
 janela.mainloop()
