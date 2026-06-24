@@ -31,15 +31,12 @@ def carregaPlanilhas(tipo):
 
     def validaTipoPlanilha(tipo):
         tipos = {'mensal': ['mensal'], 'minibio': ['minibio'], 'historico': ['historico', 'histórico'], 'ergon': ['ergon']}
-
         nomeArquivo = diretorio.lower()
-
         return any(palavra in nomeArquivo for palavra in tipos.get(tipo, []))
 
     if not validaTipoPlanilha(tipo):
         labelMensagem['text'] = 'Planilha errada.'
         labelMensagem.after(5000, lambda: labelMensagem.config(text=''))
-
         return
 
     if tipo == 'mensal':
@@ -51,26 +48,22 @@ def carregaPlanilhas(tipo):
         planilhaMensalAtiva = planilhaMensalFormatada.active
 
         labelMensagem['text'] = 'Planilha MENSAL DOS LÍDERES carregada.'
-
         testaPlanilhasLideresMensaisCarregadas()
+        
     elif tipo == 'minibio':
-            Planilhas.planilhaMinibio = pd.read_excel(diretorio)
-
-            labelMensagem['text'] = 'Planilha MINIBIO carregada.'
-
-            testaPlanilhasLideresMensaisCarregadas()
+        Planilhas.planilhaMinibio = pd.read_excel(diretorio)
+        labelMensagem['text'] = 'Planilha MINIBIO carregada.'
+        testaPlanilhasLideresMensaisCarregadas()
+            
     elif tipo == 'ergon':
         Planilhas.planilhaErgon = pd.read_excel(diretorio)
-
         labelMensagem['text'] = 'Planilha ERGON carregada.'
-
         testaPlanilhasHistoricoMinibioCarregadas()
+        
     elif tipo == 'historico':
         Planilhas.planilhaHistorico = pd.read_excel(diretorio)
         Planilhas.diretorioHistorico = diretorio
-            
         labelMensagem['text'] = 'Planilha HISTÓRICO DA MINIBIO carregada.'
-            
         testaPlanilhasHistoricoMinibioCarregadas()
 
 def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
@@ -79,8 +72,8 @@ def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
     else:
         novaJanela = Toplevel(janela)
         novaJanela.title(titulo)
-        novaJanela.geometry('1100x500')
-        novaJanela.resizable(False, False)
+        novaJanela.geometry('1200x500')
+        novaJanela.resizable(True, True)
 
         framePlanilha = Frame(novaJanela)
         framePlanilha.pack(fill=BOTH, expand=1)
@@ -89,70 +82,89 @@ def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
         tabela.show()
 
         if fechaJanelaDadosDuplicados:
-            novaJanela.protocol("WM_DELETE_WINDOW", lambda:fechaJanelaDadosDuplicados(novaJanela))
+            novaJanela.protocol("WM_DELETE_WINDOW", lambda: fechaJanelaDadosDuplicados(novaJanela))
 
 def processaPlanilhasLideresMensais():
-    nomesDuplicados, planilhasMescladas, planilhaAlterada = Planilhas.processaPlanilhasLideresMensais()
+    try:
+        nomesDuplicados, planilhasDivergentes, planilhaAlterada = Planilhas.processaPlanilhasLideresMensais()
 
-    if nomesDuplicados is None:
-        labelMensagem['text'] = 'Carregue as planilhas primeiro!'
-        return
-    
-    buttonPlanilhaMensal.config(state='disabled')
-    buttonPlanilhaMinibio.config(state='disabled')
-
-    mostraPlanilha(nomesDuplicados[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
-    mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Different_col')
-
-    for linha in planilhaMensalAtiva.iter_rows():
-        for coluna in linha:
-            coluna.value = None
-    
-    for indiceColuna, coluna in enumerate(planilhaAlterada.columns, start=1):
-        planilhaMensalAtiva.cell(row=1, column=indiceColuna, value=coluna)
-
-    for indiceLinha, linha in planilhaAlterada.iterrows():
-        for indiceColuna, coluna in enumerate(linha, start=1):
-            planilhaMensalAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
-
-    for i in range(planilhaMensalAtiva.max_row, 1, -1):
-        if planilhaMensalAtiva.cell(row=i, column=1).value is None:
-            planilhaMensalAtiva.delete_rows(i)
+        if nomesDuplicados is None:
+            labelMensagem['text'] = 'Carregue as planilhas primeiro!'
+            return
         
-    planilhaMensalFormatada.save('Planilha Mensal - eliminados registros de ex líderes.xlsx')
+        buttonPlanilhaMensal.config(state='disabled')
+        buttonPlanilhaMinibio.config(state='disabled')
+
+        mostraPlanilha(nomesDuplicados[['NOME', 'INICIO_LOTACAO', 'NOME_SETOR', 'ORGAO_ENTIDADE']], 'Nomes Duplicados')
+        
+        colunas_exibicao = [
+            'NOME', 
+            'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA',
+            'REFERENCIA_MINIBIO', 'REFERENCIA_MENSAL',
+            'NOME_SETOR_MINIBIO', 'NOME_SETOR_MENSAL'
+        ]
+
+        colunas_existentes = [col for col in colunas_exibicao if col in planilhasDivergentes.columns]
+        mostraPlanilha(planilhasDivergentes[colunas_existentes], 'Valores Diferentes')
+
+        for linha in planilhaMensalAtiva.iter_rows():
+            for coluna in linha:
+                coluna.value = None
+        
+        for indiceColuna, coluna in enumerate(planilhaAlterada.columns, start=1):
+            planilhaMensalAtiva.cell(row=1, column=indiceColuna, value=coluna)
+
+        for indiceLinha, linha in enumerate(planilhaAlterada.values, start=2):
+            for indiceColuna, valor in enumerate(linha, start=1):
+                planilhaMensalAtiva.cell(row=indiceLinha, column=indiceColuna, value=valor)
+
+        for i in range(planilhaMensalAtiva.max_row, 1, -1):
+            if planilhaMensalAtiva.cell(row=i, column=1).value is None:
+                planilhaMensalAtiva.delete_rows(i)
+            
+        planilhaMensalFormatada.save('Planilha Mensal - eliminados registros de ex líderes.xlsx')
+        labelMensagem['text'] = 'Processamento concluído com sucesso!'
+        
+    except Exception as e:
+        Planilhas.logging.error(f"Erro na interface de Líderes Mensais: {str(e)}", exc_info=True)
+        messagebox.showerror("Erro de Processamento", f"Ocorreu um erro ao processar os dados:\n{str(e)}")
 
 def processaPlanilhasHistoricoMinibio():
-    duplicados = Planilhas.processaPlanilhasHistoricoMinibio()
+    try:
+        duplicados = Planilhas.processaPlanilhasHistoricoMinibio()
 
-    if duplicados is None:
-        labelMensagem['text'] = 'Carregue as planilhas do Histórico primeiro!'
-        return
+        if duplicados is None:
+            labelMensagem['text'] = 'Carregue as planilhas do Histórico primeiro!'
+            return
 
-    colunasExibicao = ['NOME', 'CPF', 'CARGO', 'FUNCAO', 'NOME_SETOR', 'SIGLA_ORGAO_ENTIDADE']
+        colunasExibicao = ['NOME', 'CPF', 'CARGO', 'FUNCAO', 'NOME_SETOR', 'SIGLA_ORGAO_ENTIDADE']
 
-    def confirmarSalvamento(janelaPopup):
-        resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores duplicados no histórico da minibio?")
-        
-        if resposta:  
-            wb = load_workbook(Planilhas.diretorioHistorico)
-            ws = wb.active
+        def confirmarSalvamento(janelaPopup):
+            resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores duplicados no histórico da minibio?")
+            
+            if resposta:  
+                wb = load_workbook(Planilhas.diretorioHistorico)
+                ws = wb.active
 
-            cabecalho = [cell.value for cell in ws[1]]
+                cabecalho = [cell.value for cell in ws[1]]
 
-            for _, linha in duplicados.iterrows():
-                novaLinha = []
-                for coluna in cabecalho:
-                    novaLinha.append(linha.get(coluna, None))
-                ws.append(novaLinha)
+                for _, linha in duplicados.iterrows():
+                    novaLinha = []
+                    for coluna in cabecalho:
+                        novaLinha.append(linha.get(coluna, None))
+                    ws.append(novaLinha)
 
-            wb.save(Planilhas.diretorioHistorico)
-            labelMensagem['text'] = 'Histórico atualizado com sucesso!'
-        else:
-            labelMensagem['text'] = 'Ação cancelada. Dados não foram salvos.'
-        
-        janelaPopup.destroy()  
+                wb.save(Planilhas.diretorioHistorico)
+                labelMensagem['text'] = 'Histórico updated com sucesso!'
+            else:
+                labelMensagem['text'] = 'Ação cancelada. Dados não foram salvos.'
+            
+            janelaPopup.destroy()  
 
-    mostraPlanilha(duplicados[colunasExibicao], 'Valores Duplicados por CPF', fechaJanelaDadosDuplicados=confirmarSalvamento)
+        mostraPlanilha(duplicados[colunasExibicao], 'Valores Duplicados por CPF', fechaJanelaDadosDuplicados=confirmarSalvamento)
+    except Exception as e:
+        Planilhas.logging.error(f"Erro na interface do Histórico: {str(e)}", exc_info=True)
+        messagebox.showerror("Erro", f"Ocorreu um erro no histórico:\n{str(e)}")
 
 def resetaTudo():
     buttonPlanilhaMensal.config(state='normal')
@@ -165,9 +177,11 @@ def resetaTudo():
 
     labelMensagem['text'] = ''
 
-#Interface
 janela = Tk()
-janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
+try:
+    janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
+except Exception:
+    pass
 janela.geometry('1100x650')
 janela.resizable(False, False)
 janela.title('Processador de Planilhas Lideres Cariocas')
@@ -190,7 +204,7 @@ infosLideresMensais = """Esta seção faz:
 
 1. Elimina registros da planilha mensal que não estejam na planilha minibio;
 2. Salva uma nova planilha sem esses registros eliminados;
-3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE."""
+3. Exibe registros divergentes de ORGAO_ENTIDADE, REFERENCIA e NOME_SETOR."""
 
 infosHistoricoMinibio = """Esta seção faz:
 
@@ -200,7 +214,6 @@ infosHistoricoMinibio = """Esta seção faz:
 frameSecoes = Frame(janela, bg=corFundo)
 frameSecoes.pack(pady=10)
 
-#Seção Líderes Mensais
 secaoLideresMensais = Frame(frameSecoes, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
 secaoLideresMensais.pack(side='left', padx=15)
 secaoLideresMensais.pack_propagate(False)
@@ -223,7 +236,6 @@ buttonProcessaLideres = Button(secaoLideresMensais, text='⚙ Processar Planilha
 buttonProcessaLideres.config(state='disabled')
 buttonProcessaLideres.pack(pady=5)
 
-#Seção Histórico Minibio
 secaoHistoricoMinibio = Frame(frameSecoes, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
 secaoHistoricoMinibio.pack(side='left', padx=15)
 secaoHistoricoMinibio.pack_propagate(False)
@@ -244,7 +256,6 @@ buttonPlanilhaHistorico.pack(pady=5)
 buttonProcessaHistorico = Button(secaoHistoricoMinibio, text='⚙ Processar Planilha', command=lambda: processaPlanilhasHistoricoMinibio(), **estiloBotao)
 buttonProcessaHistorico.config(state='disabled')
 buttonProcessaHistorico.pack(pady=5)
-
 
 labelMensagem = Label(janela, bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 10, 'bold'))
 labelMensagem.pack(pady=20)
