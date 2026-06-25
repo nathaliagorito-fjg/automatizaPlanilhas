@@ -214,10 +214,18 @@ secaoLideresMensais.pack_propagate(False)
 frameTituloLideres = Frame(secaoLideresMensais, bg=corCard)
 frameTituloLideres.pack(fill='x', padx=20, pady=(20, 15))
 
-Label(frameTituloLideres, text='👥', bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
-Label(frameTituloLideres, text='Líderes Mensais', bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
-Frame(frameTituloLideres, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
-Label(secaoLideresMensais, text=infosLideresMensais, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
+def criaSecao(frame, secao, emoji, titulo, texto):
+    Label(frame, text=emoji, bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
+    Label(frame, text=titulo, bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
+    Frame(frame, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
+    Label(secao, text=texto, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
+
+criaSecao(frameTituloLideres, secaoLideresMensais, '👥', 'Líderes Mensais', infosLideresMensais)
+
+# Label(frameTituloLideres, text='👥', bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
+# Label(frameTituloLideres, text='Líderes Mensais', bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
+# Frame(frameTituloLideres, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
+# Label(secaoLideresMensais, text=infosLideresMensais, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
 
 buttonPlanilhaMensal = Button(secaoLideresMensais, text='Planilha Mensal', command=lambda: carregaPlanilhas('mensal'), **estiloBotao)
 buttonPlanilhaMensal.pack(pady=5)
@@ -237,10 +245,12 @@ secaoHistoricoMinibio.pack_propagate(False)
 frameTituloHistorico = Frame(secaoHistoricoMinibio, bg=corCard)
 frameTituloHistorico.pack(fill='x', padx=20, pady=(20, 15))
 
-Label(frameTituloHistorico, text='🕘', bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
-Label(frameTituloHistorico, text='Histórico Minibio', bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
-Frame(frameTituloHistorico, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
-Label(secaoHistoricoMinibio, text=infosHistoricoMinibio, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
+criaSecao(frameTituloHistorico, secaoHistoricoMinibio, '🕘', 'Histórico Minibio', infosHistoricoMinibio)
+
+# Label(frameTituloHistorico, text='🕘', bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
+# Label(frameTituloHistorico, text='Histórico Minibio', bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
+# Frame(frameTituloHistorico, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
+# Label(secaoHistoricoMinibio, text=infosHistoricoMinibio, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
 
 buttonPlanilhaErgon = Button(secaoHistoricoMinibio, text='Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
 buttonPlanilhaErgon.pack(pady=5)
