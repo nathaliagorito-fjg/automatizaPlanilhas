@@ -110,6 +110,8 @@ def processaPlanilhasLideresMensais():
         (planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA'])
         &
         (planilhasMescladas['NOMESETOR_MINIBIO'] == planilhasMescladas['NOMESETOR_MENSAL'])
+        # &
+        # (planilhasMescladas['REFERENCIA_MINIBIO'] == planilhasMescladas['REFERENCIA_MENSAL'])
     )
 
     return nomesDuplicados, planilhasMescladas, planilhaMensal

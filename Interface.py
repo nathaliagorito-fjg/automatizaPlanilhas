@@ -23,11 +23,11 @@ def carregaPlanilhas(tipo):
     
     def testaPlanilhasLideresMensaisCarregadas():
         if Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None:
-            buttonProcessaLideres.config(state='normal')
+            buttonProcessaLideres.config(state='normal', bg=corAzul)
 
     def testaPlanilhasHistoricoMinibioCarregadas():
         if Planilhas.planilhaErgon is not None and Planilhas.planilhaHistorico is not None:
-            buttonProcessaHistorico.config(state='normal')
+            buttonProcessaHistorico.config(state='normal', bg=corAzul)
 
     def validaTipoPlanilha(tipo):
         tipos = {'mensal': ['mensal'], 'minibio': ['minibio'], 'historico': ['historico', 'histórico'], 'ergon': ['ergon']}
@@ -98,8 +98,9 @@ def processaPlanilhasLideresMensais():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
     
-    buttonPlanilhaMensal.config(state='disabled')
-    buttonPlanilhaMinibio.config(state='disabled')
+    buttonPlanilhaMensal.config(state='disabled', bg=corCinza)
+    buttonPlanilhaMinibio.config(state='disabled', bg=corCinza)
+    buttonProcessaLideres.config(state='disabled', bg=corCinza)
 
     mostraPlanilha(nomesDuplicados[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
     mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_MINIBIO', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
@@ -130,6 +131,10 @@ def processaPlanilhasHistoricoMinibio():
 
     colunasExibicao = ['NOME', 'CPF', 'CARGO', 'FUNCAO', 'NOME_SETOR', 'SIGLA_ORGAO_ENTIDADE']
 
+    buttonPlanilhaErgon.config(state='disabled', bg=corCinza)
+    buttonPlanilhaHistorico.config(state='disabled', bg=corCinza)
+    buttonProcessaHistorico.config(state='disabled', bg=corCinza)
+
     def confirmarSalvamento(janelaPopup):
         resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores duplicados no histórico da minibio?")
         
@@ -155,13 +160,13 @@ def processaPlanilhasHistoricoMinibio():
     mostraPlanilha(duplicados[colunasExibicao], 'Valores Duplicados por CPF', fechaJanelaDadosDuplicados=confirmarSalvamento)
 
 def resetaTudo():
-    buttonPlanilhaMensal.config(state='normal')
-    buttonPlanilhaMinibio.config(state='normal')
-    buttonProcessaLideres.config(state='disabled')
+    buttonPlanilhaMensal.config(state='normal', bg=corAzul)
+    buttonPlanilhaMinibio.config(state='normal', bg=corAzul)
+    buttonProcessaLideres.config(state='disabled', bg=corCinza)
 
-    buttonPlanilhaErgon.config(state='normal')
-    buttonPlanilhaHistorico.config(state='normal')
-    buttonProcessaHistorico.config(state='disabled')
+    buttonPlanilhaErgon.config(state='normal', bg=corAzul)
+    buttonPlanilhaHistorico.config(state='normal', bg=corAzul)
+    buttonProcessaHistorico.config(state='disabled', bg=corCinza)
 
     labelMensagem['text'] = ''
 
@@ -172,12 +177,13 @@ janela.geometry('1100x650')
 janela.resizable(False, False)
 janela.title('Processador de Planilhas Lideres Cariocas')
 
-corFundo = '#ECF1F4'
 corAzul = '#0085B3'
 corAzulEscuro = '#094A75'
-corCard = '#FFFFFF'
-corTexto = '#1D1D1B'
 corBorda = '#D6E6F1'
+corCard = '#FFFFFF'
+corCinza = '#B5B5B5'
+corFundo = '#ECF1F4'
+corTexto = '#1D1D1B'
 
 janela.configure(bg=corFundo)
 
@@ -213,14 +219,14 @@ Label(frameTituloLideres, text='Líderes Mensais', bg=corCard, fg=corAzulEscuro,
 Frame(frameTituloLideres, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
 Label(secaoLideresMensais, text=infosLideresMensais, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
 
-buttonPlanilhaMensal = Button(secaoLideresMensais, text='📄 Planilha Mensal', command=lambda: carregaPlanilhas('mensal'), **estiloBotao)
+buttonPlanilhaMensal = Button(secaoLideresMensais, text='Planilha Mensal', command=lambda: carregaPlanilhas('mensal'), **estiloBotao)
 buttonPlanilhaMensal.pack(pady=5)
 
-buttonPlanilhaMinibio = Button(secaoLideresMensais, text='👥 Planilha Minibio', command=lambda: carregaPlanilhas('minibio'), **estiloBotao)
+buttonPlanilhaMinibio = Button(secaoLideresMensais, text='Planilha Minibio', command=lambda: carregaPlanilhas('minibio'), **estiloBotao)
 buttonPlanilhaMinibio.pack(pady=5)
 
 buttonProcessaLideres = Button(secaoLideresMensais, text='⚙️ Processar Planilhas', command=lambda: processaPlanilhasLideresMensais(), **estiloBotao)
-buttonProcessaLideres.config(state='disabled')
+buttonProcessaLideres.config(state='disabled', bg=corCinza)
 buttonProcessaLideres.pack(pady=5)
 
 #Seção Histórico Minibio
@@ -236,13 +242,13 @@ Label(frameTituloHistorico, text='Histórico Minibio', bg=corCard, fg=corAzulEsc
 Frame(frameTituloHistorico, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
 Label(secaoHistoricoMinibio, text=infosHistoricoMinibio, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
 
-buttonPlanilhaErgon = Button(secaoHistoricoMinibio, text='💼 Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
+buttonPlanilhaErgon = Button(secaoHistoricoMinibio, text='Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
 buttonPlanilhaErgon.pack(pady=5)
-buttonPlanilhaHistorico = Button(secaoHistoricoMinibio, text='🕘 Planilha Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
+buttonPlanilhaHistorico = Button(secaoHistoricoMinibio, text='Planilha Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
 buttonPlanilhaHistorico.pack(pady=5)
 
 buttonProcessaHistorico = Button(secaoHistoricoMinibio, text='⚙️ Processar Planilha', command=lambda: processaPlanilhasHistoricoMinibio(), **estiloBotao)
-buttonProcessaHistorico.config(state='disabled')
+buttonProcessaHistorico.config(state='disabled', bg=corCinza)
 buttonProcessaHistorico.pack(pady=5)
 
 
