@@ -102,7 +102,7 @@ def processaPlanilhasLideresMensais():
     buttonPlanilhaMinibio.config(state='disabled')
 
     mostraPlanilha(nomesDuplicados[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
-    mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
+    mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_MINIBIO', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
 
     for linha in planilhaMensalAtiva.iter_rows():
         for coluna in linha:

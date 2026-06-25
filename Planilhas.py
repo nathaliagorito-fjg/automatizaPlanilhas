@@ -106,7 +106,11 @@ def processaPlanilhasLideresMensais():
     defineSiglas()
 
     planilhasMescladas = planilhaMensal.merge(planilhaMinibio, on = 'NOME', how = 'inner', suffixes = ('_MENSAL', '_MINIBIO'))
-    planilhasMescladas['IGUAIS'] = planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA']
+    planilhasMescladas['IGUAIS'] = (
+        (planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA'])
+        &
+        (planilhasMescladas['NOMESETOR_MINIBIO'] == planilhasMescladas['NOMESETOR_MENSAL'])
+    )
 
     return nomesDuplicados, planilhasMescladas, planilhaMensal
 
