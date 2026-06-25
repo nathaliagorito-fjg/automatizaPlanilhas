@@ -4,8 +4,8 @@ import Planilhas
 from openpyxl import load_workbook
 from pandastable import Table
 from tkinter import *
-from tkinter.filedialog import askopenfilename
 from tkinter import messagebox
+from tkinter.filedialog import askopenfilename
 
 def armazenaImagem(diretorioAtual):
     try:
