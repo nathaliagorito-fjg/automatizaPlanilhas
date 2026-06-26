@@ -171,11 +171,34 @@ def resetaTudo():
     labelMensagem['text'] = ''
 
 #Interface
-janela = Tk()
-janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
-janela.geometry('1100x650')
-janela.resizable(False, False)
-janela.title('Processador de Planilhas Lideres Cariocas')
+def criaFrame(secao, emoji, titulo, texto):
+    frameTitulo = Frame(secao, bg=corCard)
+    frameTitulo.pack(fill='x', padx=20, pady=(20, 15))
+
+    Label(frameTitulo, text=emoji, bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
+    Label(frameTitulo, text=titulo, bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
+    Frame(frameTitulo, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
+    Label(secao, text=texto, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
+
+def criaBotoes(secao, textoPrimeiraPlanilha, textoSegundaPlanilha, tipoPrimeiraPlanilha, tipoSegundaPlanilha, processaPlanilhas):
+    buttonPrimeiraPlanilha = Button(secao, text=textoPrimeiraPlanilha, command=lambda: carregaPlanilhas(tipoPrimeiraPlanilha), **estiloBotao)
+    buttonPrimeiraPlanilha.pack(pady=5)
+
+    buttonSegundaPlanilha = Button(secao, text=textoSegundaPlanilha, command=lambda: carregaPlanilhas(tipoSegundaPlanilha), **estiloBotao)
+    buttonSegundaPlanilha.pack(pady=5)
+
+    buttonProcessaPlanilhas = Button(secao, text='⚙️ Processar Planilhas', command=lambda: processaPlanilhas(), **estiloBotao)
+    buttonProcessaPlanilhas.config(state='disabled', bg=corCinza)
+    buttonProcessaPlanilhas.pack(pady=5)
+
+    return buttonPrimeiraPlanilha, buttonSegundaPlanilha, buttonProcessaPlanilhas
+
+def criaSecao(frame):
+    secao = Frame(frame, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
+    secao.pack(side='left', padx=15)
+    secao.pack_propagate(False)
+
+    return secao
 
 corAzul = '#0085B3'
 corAzulEscuro = '#094A75'
@@ -185,12 +208,7 @@ corCinza = '#B5B5B5'
 corFundo = '#ECF1F4'
 corTexto = '#1D1D1B'
 
-janela.configure(bg=corFundo)
-
 estiloBotao = {'bg': corAzul, 'fg': 'white', 'activebackground': corAzulEscuro, 'activeforeground': 'white', 'font': ('Segoe UI', 10, 'bold'), 'relief': 'flat', 'bd': 0, 'width': 28, 'cursor': 'hand2', 'pady': 6}
-
-labelTitulo = Label(janela, text='Processador de Planilhas\nLideres Cariocas', bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 26, 'bold'))
-labelTitulo.pack(pady=(25, 20))
 
 infosLideresMensais = """Esta seção faz:
 
@@ -203,45 +221,43 @@ infosHistoricoMinibio = """Esta seção faz:
 1. Exibe registros dos CPFs duplicados da planilha do Ergon que possuam diferenças em CARGO, FUNCAO, NOME_SETOR e SIGLA_ORGAO_ENTIDADE;
 2. Salva os registros duplicados na planilha do histórico da minibio."""
 
+
+janela = Tk()
+janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
+janela.geometry('1100x650')
+janela.resizable(False, False)
+janela.title('Processador de Planilhas Lideres Cariocas')
+janela.configure(bg=corFundo)
+
+labelTitulo = Label(janela, text='Processador de Planilhas\nLideres Cariocas', bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 26, 'bold'))
+labelTitulo.pack(pady=(25, 20))
+
 frameSecoes = Frame(janela, bg=corFundo)
 frameSecoes.pack(pady=10)
 
-def criaSecao(frame, secao, emoji, titulo, texto):
-    Label(frame, text=emoji, bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
-    Label(frame, text=titulo, bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
-    Frame(frame, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
-    Label(secao, text=texto, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
-
-def criaNova(frame):
-    secao = Frame(frame, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
-    secao.pack(side='left', padx=15)
-    secao.pack_propagate(False)
-
-    return secao
-
-def criaBotoes(secao, textoPrimeiraPlanilha, textoSegundaPlanilha, tipoPrimeiraPlanilha, tipoSegundaPlanilha, processaPlanilhas):
-    buttonPrimeiraPlanilha = Button(secao, text=textoPrimeiraPlanilha, command=lambda: carregaPlanilhas(tipoPrimeiraPlanilha), **estiloBotao)
-    buttonPrimeiraPlanilha.pack(pady=5)
-
-    buttonSegundaPlanilha = Button(secaoLideresMensais, text=textoSegundaPlanilha, command=lambda: carregaPlanilhas(tipoSegundaPlanilha), **estiloBotao)
-    buttonSegundaPlanilha.pack(pady=5)
-
-    buttonProcessaPlanilhas = Button(secao, text='⚙️ Processar Planilhas', command=lambda: processaPlanilhas(), **estiloBotao)
-    buttonProcessaPlanilhas.config(state='disabled', bg=corCinza)
-    buttonProcessaPlanilhas.pack(pady=5)
-
-    return buttonPrimeiraPlanilha, buttonSegundaPlanilha, buttonProcessaPlanilhas
 
 #Seção Líderes Mensais
-secaoLideresMensais = criaNova(frameSecoes)
+secaoLideresMensais = criaSecao(frameSecoes)
 
-frameTituloLideres = Frame(secaoLideresMensais, bg=corCard)
-frameTituloLideres.pack(fill='x', padx=20, pady=(20, 15))
-
-criaSecao(frameTituloLideres, secaoLideresMensais, '👥', 'Líderes Mensais', infosLideresMensais)
+criaFrame(secaoLideresMensais, '👥', 'Líderes Mensais', infosLideresMensais)
 
 buttonPlanilhaMensal, buttonPlanilhaMinibio, buttonProcessaLideres = criaBotoes(secaoLideresMensais, 'Planilha Mensal', 'Planilha Minibio', 'mensal', 'minibio', processaPlanilhasLideresMensais)
 
+#Seção Histórico Minibio
+secaoHistoricoMinibio = criaSecao(frameSecoes)
+
+criaFrame(secaoHistoricoMinibio, '🕘', 'Histórico Minibio', infosHistoricoMinibio)
+
+buttonPlanilhaErgon, buttonPlanilhaHistorico, buttonProcessaHistorico = criaBotoes(secaoHistoricoMinibio, 'Planilha Ergon', 'Planilha Histórico', 'ergon', 'historico', processaPlanilhasHistoricoMinibio)
+
+
+labelMensagem = Label(janela, bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 10, 'bold'))
+labelMensagem.pack(pady=20)
+
+buttonRefresh = Button(janela, text='↻', command=lambda: resetaTudo(), fg=corAzul, activeforeground=corAzulEscuro, font=('Segoe UI', 25, 'bold'), relief='flat', bd=0, width=3, height=1, cursor='hand2')
+buttonRefresh.place(relx=1.0, rely=1.0, x=-25, y=-20, anchor='se')
+
+janela.mainloop()
 
 # secaoLideresMensais = Frame(frameSecoes, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
 # secaoLideresMensais.pack(side='left', padx=15)
@@ -257,32 +273,17 @@ buttonPlanilhaMensal, buttonPlanilhaMinibio, buttonProcessaLideres = criaBotoes(
 # buttonProcessaLideres.config(state='disabled', bg=corCinza)
 # buttonProcessaLideres.pack(pady=5)
 
+
 #Seção Histórico Minibio
 # secaoHistoricoMinibio = Frame(frameSecoes, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
 # secaoHistoricoMinibio.pack(side='left', padx=15)
 # secaoHistoricoMinibio.pack_propagate(False)
 
-secaoHistoricoMinibio = criaNova(frameSecoes)
+# buttonPlanilhaErgon = Button(secaoHistoricoMinibio, text='Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
+# buttonPlanilhaErgon.pack(pady=5)
+# buttonPlanilhaHistorico = Button(secaoHistoricoMinibio, text='Planilha Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
+# buttonPlanilhaHistorico.pack(pady=5)
 
-frameTituloHistorico = Frame(secaoHistoricoMinibio, bg=corCard)
-frameTituloHistorico.pack(fill='x', padx=20, pady=(20, 15))
-
-criaSecao(frameTituloHistorico, secaoHistoricoMinibio, '🕘', 'Histórico Minibio', infosHistoricoMinibio)
-
-buttonPlanilhaErgon = Button(secaoHistoricoMinibio, text='Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
-buttonPlanilhaErgon.pack(pady=5)
-buttonPlanilhaHistorico = Button(secaoHistoricoMinibio, text='Planilha Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
-buttonPlanilhaHistorico.pack(pady=5)
-
-buttonProcessaHistorico = Button(secaoHistoricoMinibio, text='⚙️ Processar Planilha', command=lambda: processaPlanilhasHistoricoMinibio(), **estiloBotao)
-buttonProcessaHistorico.config(state='disabled', bg=corCinza)
-buttonProcessaHistorico.pack(pady=5)
-
-
-labelMensagem = Label(janela, bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 10, 'bold'))
-labelMensagem.pack(pady=20)
-
-buttonRefresh = Button(janela, text='↻', command=lambda: resetaTudo(), fg=corAzul, activeforeground=corAzulEscuro, font=('Segoe UI', 25, 'bold'), relief='flat', bd=0, width=3, height=1, cursor='hand2')
-buttonRefresh.place(relx=1.0, rely=1.0, x=-25, y=-20, anchor='se')
-
-janela.mainloop()
+# buttonProcessaHistorico = Button(secaoHistoricoMinibio, text='⚙️ Processar Planilha', command=lambda: processaPlanilhasHistoricoMinibio(), **estiloBotao)
+# buttonProcessaHistorico.config(state='disabled', bg=corCinza)
+# buttonProcessaHistorico.pack(pady=5)
