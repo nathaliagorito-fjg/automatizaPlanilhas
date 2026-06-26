@@ -1,3 +1,4 @@
+import ctypes
 import os, sys
 import pandas as pd
 import Planilhas
@@ -6,6 +7,7 @@ from pandastable import Table
 from tkinter import *
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
+
 
 def armazenaImagem(diretorioAtual):
     try:
@@ -171,6 +173,8 @@ def resetaTudo():
     labelMensagem['text'] = ''
 
 #Interface
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("ProcessadorPlanilhas") #Forçar o logo a aparecer em toda a interface do sistema
+
 def criaFrame(secao, emoji, titulo, texto):
     frameTitulo = Frame(secao, bg=corCard)
     frameTitulo.pack(fill='x', padx=20, pady=(20, 15))
@@ -178,7 +182,7 @@ def criaFrame(secao, emoji, titulo, texto):
     Label(frameTitulo, text=emoji, bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
     Label(frameTitulo, text=titulo, bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
     Frame(frameTitulo, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
-    Label(secao, text=texto, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
+    Label(secao, text=texto, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 8)).pack(anchor='w', padx=25, pady=(0, 15))
 
 def criaBotoes(secao, textoPrimeiraPlanilha, textoSegundaPlanilha, tipoPrimeiraPlanilha, tipoSegundaPlanilha, processaPlanilhas):
     buttonPrimeiraPlanilha = Button(secao, text=textoPrimeiraPlanilha, command=lambda: carregaPlanilhas(tipoPrimeiraPlanilha), **estiloBotao)
@@ -214,12 +218,16 @@ infosLideresMensais = """Esta seção faz:
 
 1. Elimina registros da planilha mensal que não estejam na planilha minibio;
 2. Salva uma nova planilha sem esses registros eliminados;
-3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE."""
+3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE.
+
+OBS: Precisa constar nos nomes dos arquivos as palavras 'mensal' para a planilha mensal e 'minibio' para a planilha minibio."""
 
 infosHistoricoMinibio = """Esta seção faz:
 
 1. Exibe registros dos CPFs duplicados da planilha do Ergon que possuam diferenças em CARGO, FUNCAO, NOME_SETOR e SIGLA_ORGAO_ENTIDADE;
-2. Salva os registros duplicados na planilha do histórico da minibio."""
+2. Salva os registros duplicados na planilha do histórico da minibio.
+
+OBS: Precisa constar nos nomes dos arquivos as palavras 'ergon' para a planilha ergon e 'histórico' para a planilha histórico.\n"""
 
 
 janela = Tk()
@@ -258,32 +266,3 @@ buttonRefresh = Button(janela, text='↻', command=lambda: resetaTudo(), fg=corA
 buttonRefresh.place(relx=1.0, rely=1.0, x=-25, y=-20, anchor='se')
 
 janela.mainloop()
-
-# secaoLideresMensais = Frame(frameSecoes, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
-# secaoLideresMensais.pack(side='left', padx=15)
-# secaoLideresMensais.pack_propagate(False)
-
-# buttonPlanilhaMensal = Button(secaoLideresMensais, text='Planilha Mensal', command=lambda: carregaPlanilhas('mensal'), **estiloBotao)
-# buttonPlanilhaMensal.pack(pady=5)
-
-# buttonPlanilhaMinibio = Button(secaoLideresMensais, text='Planilha Minibio', command=lambda: carregaPlanilhas('minibio'), **estiloBotao)
-# buttonPlanilhaMinibio.pack(pady=5)
-
-# buttonProcessaLideres = Button(secaoLideresMensais, text='⚙️ Processar Planilhas', command=lambda: processaPlanilhasLideresMensais(), **estiloBotao)
-# buttonProcessaLideres.config(state='disabled', bg=corCinza)
-# buttonProcessaLideres.pack(pady=5)
-
-
-#Seção Histórico Minibio
-# secaoHistoricoMinibio = Frame(frameSecoes, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
-# secaoHistoricoMinibio.pack(side='left', padx=15)
-# secaoHistoricoMinibio.pack_propagate(False)
-
-# buttonPlanilhaErgon = Button(secaoHistoricoMinibio, text='Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
-# buttonPlanilhaErgon.pack(pady=5)
-# buttonPlanilhaHistorico = Button(secaoHistoricoMinibio, text='Planilha Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
-# buttonPlanilhaHistorico.pack(pady=5)
-
-# buttonProcessaHistorico = Button(secaoHistoricoMinibio, text='⚙️ Processar Planilha', command=lambda: processaPlanilhasHistoricoMinibio(), **estiloBotao)
-# buttonProcessaHistorico.config(state='disabled', bg=corCinza)
-# buttonProcessaHistorico.pack(pady=5)
