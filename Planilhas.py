@@ -120,13 +120,4 @@ def processaPlanilhasLideresMensais():
     )
 
     return nomesDuplicados, planilhasMescladas, planilhaMensal
-
-def processaPlanilhasHistoricoMinibio():
-    global planilhaErgon, planilhaHistorico
-
-    if planilhaErgon is None or planilhaHistorico is None:
-        return None
-
-    valoresDuplicados = planilhaErgon[planilhaErgon.duplicated(subset=['CPF'], keep=False)]
-
-    return valoresDuplicados
+

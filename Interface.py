@@ -32,9 +32,7 @@ def carregaPlanilhas(tipo):
             buttonValoresDiferentes.config(state='normal', bg=corAzul)
             buttonNomesDuplicados.config(state='normal', bg=corAzul)
 
-    def testaPlanilhasHistoricoMinibioCarregadas():
-        if Planilhas.planilhaErgon is not None and Planilhas.planilhaHistorico is not None:
-            buttonGerarHistorico.config(state='normal', bg=corAzul)
+
 
     def validaTipoPlanilha(tipo):
         tipos = {'mensal': ['mensal'], 'ergon': ['ergon'], 'historico': ['historico', 'histórico']}
@@ -66,14 +64,11 @@ def carregaPlanilhas(tipo):
         labelMensagem['text'] = 'Planilha ERGON carregada.'
 
         testaPlanilhasLideresMensaisCarregadas()
-        testaPlanilhasHistoricoMinibioCarregadas()
     elif tipo == 'historico':
         Planilhas.planilhaHistorico = pd.read_excel(diretorio)
         Planilhas.diretorioHistorico = diretorio
             
         labelMensagem['text'] = 'Planilha HISTÓRICO carregada.'
-            
-        testaPlanilhasHistoricoMinibioCarregadas()
 
 def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
     if planilha is None or planilha.empty:
@@ -124,25 +119,11 @@ def mostraValoresDiferentes():
     if not garantirProcessamentoLideres():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
-    mostraPlanilha(planilhasMescladasProcessado.loc[planilhasMescladasProcessado['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_ERGON', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_ERGON', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
-
-def mostraNomesDuplicados():
-    if not garantirProcessamentoLideres():
-        labelMensagem['text'] = 'Carregue as planilhas primeiro!'
-        return
-    mostraPlanilha(nomesDuplicadosProcessado[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
-
-def processaPlanilhasHistoricoMinibio():
-    duplicados = Planilhas.processaPlanilhasHistoricoMinibio()
-
-    if duplicados is None:
-        labelMensagem['text'] = 'Carregue as planilhas do Histórico primeiro!'
-        return
-
-    colunasExibicao = ['NOME', 'CPF', 'CARGO', 'FUNCAO', 'NOME_SETOR', 'SIGLA_ORGAO_ENTIDADE']
-
+    
+    df_diferentes = planilhasMescladasProcessado.loc[planilhasMescladasProcessado['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_ERGON', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_ERGON', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']]
+    
     def confirmarSalvamento(janelaPopup):
-        resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores duplicados no histórico da minibio?")
+        resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores diferentes na planilha Histórico?")
         
         if resposta:  
             wb = load_workbook(Planilhas.diretorioHistorico)
@@ -150,7 +131,7 @@ def processaPlanilhasHistoricoMinibio():
 
             cabecalho = [cell.value for cell in ws[1]]
 
-            for _, linha in duplicados.iterrows():
+            for _, linha in df_diferentes.iterrows():
                 novaLinha = []
                 for coluna in cabecalho:
                     novaLinha.append(linha.get(coluna, None))
@@ -163,7 +144,17 @@ def processaPlanilhasHistoricoMinibio():
         
         janelaPopup.destroy()  
 
-    mostraPlanilha(duplicados[colunasExibicao], 'Valores Duplicados por CPF', fechaJanelaDadosDuplicados=confirmarSalvamento)
+    callback_fechar = confirmarSalvamento if Planilhas.planilhaHistorico is not None else None
+    
+    mostraPlanilha(df_diferentes, 'Valores Diferentes', fechaJanelaDadosDuplicados=callback_fechar)
+
+def mostraNomesDuplicados():
+    if not garantirProcessamentoLideres():
+        labelMensagem['text'] = 'Carregue as planilhas primeiro!'
+        return
+    mostraPlanilha(nomesDuplicadosProcessado[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
+
+
 
 def resetaTudo():
     global dadosProcessadosMensal
@@ -175,7 +166,6 @@ def resetaTudo():
     
     buttonValoresDiferentes.config(state='disabled', bg=corCinza)
     buttonNomesDuplicados.config(state='disabled', bg=corCinza)
-    buttonGerarHistorico.config(state='disabled', bg=corCinza)
 
     Planilhas.planilhaMensal = None
     Planilhas.planilhaErgon = None
@@ -196,13 +186,12 @@ corTexto = '#1D1D1B'
 
 estiloBotao = {'bg': corAzul, 'fg': 'white', 'activebackground': corAzulEscuro, 'activeforeground': 'white', 'font': ('Segoe UI', 10, 'bold'), 'relief': 'flat', 'bd': 0, 'width': 22, 'cursor': 'hand2', 'pady': 6}
 
-infosLideresMensais = """Esta seção faz:
+infosLideresMensais = """Esta ferramenta faz:
 
 1. Elimina registros da planilha mensal que não estejam na planilha Ergon;
 2. Salva uma nova planilha sem esses registros eliminados;
-3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE.
-
-OBS: Precisa constar nos nomes dos arquivos as palavras 'mensal' para a planilha mensal e 'ergon' para a planilha Ergon."""
+3. Exibe registros das duas planilhas que estejam com valores diferentes.
+4. Exibe registros de nomes duplicados."""
 
 janela = Tk()
 janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
@@ -250,9 +239,7 @@ buttonNomesDuplicados = Button(frameBotoesAcao, text='Nomes Duplicados', command
 buttonNomesDuplicados.config(state='disabled', bg=corCinza)
 buttonNomesDuplicados.pack(side='left', padx=10)
 
-buttonGerarHistorico = Button(frameBotoesAcao, text='Gerar Histórico', command=processaPlanilhasHistoricoMinibio, **estiloBotao)
-buttonGerarHistorico.config(state='disabled', bg=corCinza)
-buttonGerarHistorico.pack(side='left', padx=10)
+
 
 labelMensagem = Label(janela, bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 10, 'bold'))
 labelMensagem.pack(pady=10)
