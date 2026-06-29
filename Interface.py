@@ -35,7 +35,7 @@ def carregaPlanilhas(tipo):
 
 
     def validaTipoPlanilha(tipo):
-        tipos = {'mensal': ['mensal'], 'ergon': ['ergon'], 'historico': ['historico', 'histórico']}
+        tipos = {'mensal': ['mensal'], 'ergon': ['ergon']}
 
         nomeArquivo = diretorio.lower()
 
@@ -64,11 +64,6 @@ def carregaPlanilhas(tipo):
         labelMensagem['text'] = 'Planilha ERGON carregada.'
 
         testaPlanilhasLideresMensaisCarregadas()
-    elif tipo == 'historico':
-        Planilhas.planilhaHistorico = pd.read_excel(diretorio)
-        Planilhas.diretorioHistorico = diretorio
-            
-        labelMensagem['text'] = 'Planilha HISTÓRICO carregada.'
 
 def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
     if planilha is None or planilha.empty:
@@ -126,25 +121,34 @@ def mostraValoresDiferentes():
         resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores diferentes na planilha Histórico?")
         
         if resposta:  
-            wb = load_workbook(Planilhas.diretorioHistorico)
-            ws = wb.active
+            diretorioHistorico = askopenfilename(title="Selecione a planilha Histórico", filetypes=[('Excel files', '*.xlsx *.xls')])
+            if not diretorioHistorico:
+                labelMensagem['text'] = 'Ação cancelada. Planilha Histórico não selecionada.'
+                janelaPopup.destroy()
+                return
+                
+            try:
+                wb = load_workbook(diretorioHistorico)
+                ws = wb.active
 
-            cabecalho = [cell.value for cell in ws[1]]
+                cabecalho = [cell.value for cell in ws[1]]
 
-            for _, linha in df_diferentes.iterrows():
-                novaLinha = []
-                for coluna in cabecalho:
-                    novaLinha.append(linha.get(coluna, None))
-                ws.append(novaLinha)
+                for _, linha in df_diferentes.iterrows():
+                    novaLinha = []
+                    for coluna in cabecalho:
+                        novaLinha.append(linha.get(coluna, None))
+                    ws.append(novaLinha)
 
-            wb.save(Planilhas.diretorioHistorico)
-            labelMensagem['text'] = 'Histórico atualizado com sucesso!'
+                wb.save(diretorioHistorico)
+                labelMensagem['text'] = 'Histórico atualizado com sucesso!'
+            except Exception as e:
+                labelMensagem['text'] = f'Erro ao salvar: {str(e)}'
         else:
             labelMensagem['text'] = 'Ação cancelada. Dados não foram salvos.'
         
         janelaPopup.destroy()  
 
-    callback_fechar = confirmarSalvamento if Planilhas.planilhaHistorico is not None else None
+    callback_fechar = confirmarSalvamento
     
     mostraPlanilha(df_diferentes, 'Valores Diferentes', fechaJanelaDadosDuplicados=callback_fechar)
 
@@ -162,14 +166,12 @@ def resetaTudo():
     
     buttonPlanilhaMensal.config(state='normal', bg=corAzul)
     buttonPlanilhaErgon.config(state='normal', bg=corAzul)
-    buttonPlanilhaHistorico.config(state='normal', bg=corAzul)
     
     buttonValoresDiferentes.config(state='disabled', bg=corCinza)
     buttonNomesDuplicados.config(state='disabled', bg=corCinza)
 
     Planilhas.planilhaMensal = None
     Planilhas.planilhaErgon = None
-    Planilhas.planilhaHistorico = None
 
     labelMensagem['text'] = ''
 
@@ -224,8 +226,7 @@ buttonPlanilhaMensal.pack(side='left', padx=10)
 buttonPlanilhaErgon = Button(frameBotoesUpload, text='Subir Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
 buttonPlanilhaErgon.pack(side='left', padx=10)
 
-buttonPlanilhaHistorico = Button(frameBotoesUpload, text='Subir Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
-buttonPlanilhaHistorico.pack(side='left', padx=10)
+
 
 # Botões de Ação
 frameBotoesAcao = Frame(janela, bg=corFundo)
