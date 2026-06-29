@@ -3,7 +3,6 @@ import unicodedata as uni
 from openpyxl import load_workbook
 
 planilhaMensal = None
-planilhaMinibio = None
 planilhaErgon = None
 planilhaHistorico = None
 diretorioHistorico = None
@@ -90,29 +89,34 @@ def defineSiglas():
   criaSigla('Fomento do Município', 'INVEST.RIO')
 
 def processaPlanilhasLideresMensais():
-    global planilhaMensal, planilhaMinibio
+    global planilhaMensal, planilhaErgon
 
-    if planilhaMensal is None or planilhaMinibio is None:
+    if planilhaMensal is None or planilhaErgon is None:
         return None, None, None
 
     pd.set_option('display.max_rows', None)
     
     planilhaMensal['INICIO_LOTACAO'] = pd.to_datetime(planilhaMensal['INICIO_LOTACAO'], errors='coerce')
     planilhaMensal['INICIO_LOTACAO'] = planilhaMensal['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
-    planilhaMinibio['ORGAO_ENTIDADE'] = planilhaMinibio['ORGAO_ENTIDADE'].apply(normalizaTexto)
+    
+    # Renomeia colunas da Ergon para padronizar com a antiga Minibio
+    if 'SIGLA_ORGAO_ENTIDADE' in planilhaErgon.columns and 'ORGAO_ENTIDADE' not in planilhaErgon.columns:
+        planilhaErgon = planilhaErgon.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
+    if 'NOME_SETOR' in planilhaErgon.columns and 'NOMESETOR' not in planilhaErgon.columns:
+        planilhaErgon = planilhaErgon.rename(columns={'NOME_SETOR': 'NOMESETOR'})
 
-    planilhaMensal = planilhaMensal[planilhaMensal['NOME'].isin(planilhaMinibio['NOME'])]
+    planilhaErgon['ORGAO_ENTIDADE'] = planilhaErgon['ORGAO_ENTIDADE'].apply(normalizaTexto)
+
+    planilhaMensal = planilhaMensal[planilhaMensal['NOME'].isin(planilhaErgon['NOME'])]
     nomesDuplicados = planilhaMensal[planilhaMensal.duplicated(subset=['NOME'], keep=False)]
 
     defineSiglas()
 
-    planilhasMescladas = planilhaMensal.merge(planilhaMinibio, on = 'NOME', how = 'inner', suffixes = ('_MENSAL', '_MINIBIO'))
+    planilhasMescladas = planilhaMensal.merge(planilhaErgon, on = 'NOME', how = 'inner', suffixes = ('_MENSAL', '_ERGON'))
     planilhasMescladas['IGUAIS'] = (
-        (planilhasMescladas['ORGAO_ENTIDADE_MINIBIO'] == planilhasMescladas['SIGLA'])
+        (planilhasMescladas['ORGAO_ENTIDADE_ERGON'] == planilhasMescladas['SIGLA'])
         &
-        (planilhasMescladas['NOMESETOR_MINIBIO'] == planilhasMescladas['NOMESETOR_MENSAL'])
-        # &
-        # (planilhasMescladas['REFERENCIA_MINIBIO'] == planilhasMescladas['REFERENCIA_MENSAL'])
+        (planilhasMescladas['NOMESETOR_ERGON'] == planilhasMescladas['NOMESETOR_MENSAL'])
     )
 
     return nomesDuplicados, planilhasMescladas, planilhaMensal

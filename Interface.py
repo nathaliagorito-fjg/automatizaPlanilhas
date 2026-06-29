@@ -17,6 +17,10 @@ def armazenaImagem(diretorioAtual):
     
     return os.path.join(diretorioTemporario, diretorioAtual)
 
+dadosProcessadosMensal = False
+nomesDuplicadosProcessado = None
+planilhasMescladasProcessado = None
+
 def carregaPlanilhas(tipo):
     diretorio = askopenfilename(filetypes=[('Excel files', '*.xlsx *.xls')])
 
@@ -24,15 +28,16 @@ def carregaPlanilhas(tipo):
         return
     
     def testaPlanilhasLideresMensaisCarregadas():
-        if Planilhas.planilhaMensal is not None and Planilhas.planilhaMinibio is not None:
-            buttonProcessaLideres.config(state='normal', bg=corAzul)
+        if Planilhas.planilhaMensal is not None and Planilhas.planilhaErgon is not None:
+            buttonValoresDiferentes.config(state='normal', bg=corAzul)
+            buttonNomesDuplicados.config(state='normal', bg=corAzul)
 
     def testaPlanilhasHistoricoMinibioCarregadas():
         if Planilhas.planilhaErgon is not None and Planilhas.planilhaHistorico is not None:
-            buttonProcessaHistorico.config(state='normal', bg=corAzul)
+            buttonGerarHistorico.config(state='normal', bg=corAzul)
 
     def validaTipoPlanilha(tipo):
-        tipos = {'mensal': ['mensal'], 'minibio': ['minibio'], 'historico': ['historico', 'histórico'], 'ergon': ['ergon']}
+        tipos = {'mensal': ['mensal'], 'ergon': ['ergon'], 'historico': ['historico', 'histórico']}
 
         nomeArquivo = diretorio.lower()
 
@@ -55,23 +60,18 @@ def carregaPlanilhas(tipo):
         labelMensagem['text'] = 'Planilha MENSAL DOS LÍDERES carregada.'
 
         testaPlanilhasLideresMensaisCarregadas()
-    elif tipo == 'minibio':
-            Planilhas.planilhaMinibio = pd.read_excel(diretorio)
-
-            labelMensagem['text'] = 'Planilha MINIBIO carregada.'
-
-            testaPlanilhasLideresMensaisCarregadas()
     elif tipo == 'ergon':
         Planilhas.planilhaErgon = pd.read_excel(diretorio)
 
         labelMensagem['text'] = 'Planilha ERGON carregada.'
 
+        testaPlanilhasLideresMensaisCarregadas()
         testaPlanilhasHistoricoMinibioCarregadas()
     elif tipo == 'historico':
         Planilhas.planilhaHistorico = pd.read_excel(diretorio)
         Planilhas.diretorioHistorico = diretorio
             
-        labelMensagem['text'] = 'Planilha HISTÓRICO DA MINIBIO carregada.'
+        labelMensagem['text'] = 'Planilha HISTÓRICO carregada.'
             
         testaPlanilhasHistoricoMinibioCarregadas()
 
@@ -93,36 +93,44 @@ def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
         if fechaJanelaDadosDuplicados:
             novaJanela.protocol("WM_DELETE_WINDOW", lambda:fechaJanelaDadosDuplicados(novaJanela))
 
-def processaPlanilhasLideresMensais():
-    nomesDuplicados, planilhasMescladas, planilhaAlterada = Planilhas.processaPlanilhasLideresMensais()
+def garantirProcessamentoLideres():
+    global dadosProcessadosMensal, nomesDuplicadosProcessado, planilhasMescladasProcessado
+    if not dadosProcessadosMensal:
+        nomesDuplicadosProcessado, planilhasMescladasProcessado, planilhaAlterada = Planilhas.processaPlanilhasLideresMensais()
 
-    if nomesDuplicados is None:
+        if nomesDuplicadosProcessado is None:
+            return False
+
+        for linha in planilhaMensalAtiva.iter_rows():
+            for coluna in linha:
+                coluna.value = None
+        
+        for indiceColuna, coluna in enumerate(planilhaAlterada.columns, start=1):
+            planilhaMensalAtiva.cell(row=1, column=indiceColuna, value=coluna)
+
+        for indiceLinha, linha in planilhaAlterada.iterrows():
+            for indiceColuna, coluna in enumerate(linha, start=1):
+                planilhaMensalAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
+
+        for i in range(planilhaMensalAtiva.max_row, 1, -1):
+            if planilhaMensalAtiva.cell(row=i, column=1).value is None:
+                planilhaMensalAtiva.delete_rows(i)
+            
+        planilhaMensalFormatada.save('Planilha Mensal - eliminados registros de ex líderes.xlsx')
+        dadosProcessadosMensal = True
+    return True
+
+def mostraValoresDiferentes():
+    if not garantirProcessamentoLideres():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
-    
-    buttonPlanilhaMensal.config(state='disabled', bg=corCinza)
-    buttonPlanilhaMinibio.config(state='disabled', bg=corCinza)
-    buttonProcessaLideres.config(state='disabled', bg=corCinza)
+    mostraPlanilha(planilhasMescladasProcessado.loc[planilhasMescladasProcessado['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_ERGON', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_ERGON', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
 
-    mostraPlanilha(nomesDuplicados[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
-    mostraPlanilha(planilhasMescladas.loc[planilhasMescladas['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_MINIBIO', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_MINIBIO', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']], 'Valores Diferentes')
-
-    for linha in planilhaMensalAtiva.iter_rows():
-        for coluna in linha:
-            coluna.value = None
-    
-    for indiceColuna, coluna in enumerate(planilhaAlterada.columns, start=1):
-        planilhaMensalAtiva.cell(row=1, column=indiceColuna, value=coluna)
-
-    for indiceLinha, linha in planilhaAlterada.iterrows():
-        for indiceColuna, coluna in enumerate(linha, start=1):
-            planilhaMensalAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
-
-    for i in range(planilhaMensalAtiva.max_row, 1, -1):
-        if planilhaMensalAtiva.cell(row=i, column=1).value is None:
-            planilhaMensalAtiva.delete_rows(i)
-        
-    planilhaMensalFormatada.save('Planilha Mensal - eliminados registros de ex líderes.xlsx')
+def mostraNomesDuplicados():
+    if not garantirProcessamentoLideres():
+        labelMensagem['text'] = 'Carregue as planilhas primeiro!'
+        return
+    mostraPlanilha(nomesDuplicadosProcessado[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
 
 def processaPlanilhasHistoricoMinibio():
     duplicados = Planilhas.processaPlanilhasHistoricoMinibio()
@@ -132,10 +140,6 @@ def processaPlanilhasHistoricoMinibio():
         return
 
     colunasExibicao = ['NOME', 'CPF', 'CARGO', 'FUNCAO', 'NOME_SETOR', 'SIGLA_ORGAO_ENTIDADE']
-
-    buttonPlanilhaErgon.config(state='disabled', bg=corCinza)
-    buttonPlanilhaHistorico.config(state='disabled', bg=corCinza)
-    buttonProcessaHistorico.config(state='disabled', bg=corCinza)
 
     def confirmarSalvamento(janelaPopup):
         resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores duplicados no histórico da minibio?")
@@ -162,47 +166,25 @@ def processaPlanilhasHistoricoMinibio():
     mostraPlanilha(duplicados[colunasExibicao], 'Valores Duplicados por CPF', fechaJanelaDadosDuplicados=confirmarSalvamento)
 
 def resetaTudo():
+    global dadosProcessadosMensal
+    dadosProcessadosMensal = False
+    
     buttonPlanilhaMensal.config(state='normal', bg=corAzul)
-    buttonPlanilhaMinibio.config(state='normal', bg=corAzul)
-    buttonProcessaLideres.config(state='disabled', bg=corCinza)
-
     buttonPlanilhaErgon.config(state='normal', bg=corAzul)
     buttonPlanilhaHistorico.config(state='normal', bg=corAzul)
-    buttonProcessaHistorico.config(state='disabled', bg=corCinza)
+    
+    buttonValoresDiferentes.config(state='disabled', bg=corCinza)
+    buttonNomesDuplicados.config(state='disabled', bg=corCinza)
+    buttonGerarHistorico.config(state='disabled', bg=corCinza)
+
+    Planilhas.planilhaMensal = None
+    Planilhas.planilhaErgon = None
+    Planilhas.planilhaHistorico = None
 
     labelMensagem['text'] = ''
 
 #Interface
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("ProcessadorPlanilhas") #Forçar o logo a aparecer em toda a interface do sistema
-
-def criaFrame(secao, emoji, titulo, texto):
-    frameTitulo = Frame(secao, bg=corCard)
-    frameTitulo.pack(fill='x', padx=20, pady=(20, 15))
-
-    Label(frameTitulo, text=emoji, bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 22)).pack(side='left')
-    Label(frameTitulo, text=titulo, bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 16, 'bold')).pack(side='left', padx=10)
-    Frame(frameTitulo, bg=corAzul, height=2).pack(side='left', fill='x', expand=True, padx=(15, 0), pady=15)
-    Label(secao, text=texto, bg=corCard, fg=corTexto, justify='left', wraplength=400, font=('Segoe UI', 8)).pack(anchor='w', padx=25, pady=(0, 15))
-
-def criaBotoes(secao, textoPrimeiraPlanilha, textoSegundaPlanilha, tipoPrimeiraPlanilha, tipoSegundaPlanilha, processaPlanilhas):
-    buttonPrimeiraPlanilha = Button(secao, text=textoPrimeiraPlanilha, command=lambda: carregaPlanilhas(tipoPrimeiraPlanilha), **estiloBotao)
-    buttonPrimeiraPlanilha.pack(pady=5)
-
-    buttonSegundaPlanilha = Button(secao, text=textoSegundaPlanilha, command=lambda: carregaPlanilhas(tipoSegundaPlanilha), **estiloBotao)
-    buttonSegundaPlanilha.pack(pady=5)
-
-    buttonProcessaPlanilhas = Button(secao, text='⚙️ Processar Planilhas', command=lambda: processaPlanilhas(), **estiloBotao)
-    buttonProcessaPlanilhas.config(state='disabled', bg=corCinza)
-    buttonProcessaPlanilhas.pack(pady=5)
-
-    return buttonPrimeiraPlanilha, buttonSegundaPlanilha, buttonProcessaPlanilhas
-
-def criaSecao(frame):
-    secao = Frame(frame, bg=corCard, width=460, height=400, highlightbackground=corBorda, highlightthickness=1)
-    secao.pack(side='left', padx=15)
-    secao.pack_propagate(False)
-
-    return secao
 
 corAzul = '#0085B3'
 corAzulEscuro = '#094A75'
@@ -212,23 +194,15 @@ corCinza = '#B5B5B5'
 corFundo = '#ECF1F4'
 corTexto = '#1D1D1B'
 
-estiloBotao = {'bg': corAzul, 'fg': 'white', 'activebackground': corAzulEscuro, 'activeforeground': 'white', 'font': ('Segoe UI', 10, 'bold'), 'relief': 'flat', 'bd': 0, 'width': 28, 'cursor': 'hand2', 'pady': 6}
+estiloBotao = {'bg': corAzul, 'fg': 'white', 'activebackground': corAzulEscuro, 'activeforeground': 'white', 'font': ('Segoe UI', 10, 'bold'), 'relief': 'flat', 'bd': 0, 'width': 22, 'cursor': 'hand2', 'pady': 6}
 
 infosLideresMensais = """Esta seção faz:
 
-1. Elimina registros da planilha mensal que não estejam na planilha minibio;
+1. Elimina registros da planilha mensal que não estejam na planilha Ergon;
 2. Salva uma nova planilha sem esses registros eliminados;
 3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE.
 
-OBS: Precisa constar nos nomes dos arquivos as palavras 'mensal' para a planilha mensal e 'minibio' para a planilha minibio."""
-
-infosHistoricoMinibio = """Esta seção faz:
-
-1. Exibe registros dos CPFs duplicados da planilha do Ergon que possuam diferenças em CARGO, FUNCAO, NOME_SETOR e SIGLA_ORGAO_ENTIDADE;
-2. Salva os registros duplicados na planilha do histórico da minibio.
-
-OBS: Precisa constar nos nomes dos arquivos as palavras 'ergon' para a planilha ergon e 'histórico' para a planilha histórico.\n"""
-
+OBS: Precisa constar nos nomes dos arquivos as palavras 'mensal' para a planilha mensal e 'ergon' para a planilha Ergon."""
 
 janela = Tk()
 janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
@@ -237,30 +211,51 @@ janela.resizable(False, False)
 janela.title('Processador de Planilhas Lideres Cariocas')
 janela.configure(bg=corFundo)
 
-labelTitulo = Label(janela, text='Processador de Planilhas\nLideres Cariocas', bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 26, 'bold'))
+labelTitulo = Label(janela, text='Processador de Planilhas\nLíderes Cariocas', bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 26, 'bold'))
 labelTitulo.pack(pady=(25, 20))
 
-frameSecoes = Frame(janela, bg=corFundo)
-frameSecoes.pack(pady=10)
+# Instruções
+frameInstrucoes = Frame(janela, bg=corCard, highlightbackground=corBorda, highlightthickness=1)
+frameInstrucoes.pack(pady=(0, 20), padx=50, fill='x')
 
+frameTituloInst = Frame(frameInstrucoes, bg=corCard)
+frameTituloInst.pack(fill='x', padx=20, pady=(15, 5))
+Label(frameTituloInst, text='⚙️', bg=corCard, fg=corAzul, font=('Segoe UI Emoji', 20)).pack(side='left')
+Label(frameTituloInst, text='Instruções', bg=corCard, fg=corAzulEscuro, font=('Segoe UI', 14, 'bold')).pack(side='left', padx=10)
 
-#Seção Líderes Mensais
-secaoLideresMensais = criaSecao(frameSecoes)
+Label(frameInstrucoes, text=infosLideresMensais, bg=corCard, fg=corTexto, justify='left', font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
 
-criaFrame(secaoLideresMensais, '👥', 'Líderes Mensais', infosLideresMensais)
+# Botões de Upload
+frameBotoesUpload = Frame(janela, bg=corFundo)
+frameBotoesUpload.pack(pady=10)
 
-buttonPlanilhaMensal, buttonPlanilhaMinibio, buttonProcessaLideres = criaBotoes(secaoLideresMensais, 'Planilha Mensal', 'Planilha Minibio', 'mensal', 'minibio', processaPlanilhasLideresMensais)
+buttonPlanilhaMensal = Button(frameBotoesUpload, text='Subir Planilha Mensal', command=lambda: carregaPlanilhas('mensal'), **estiloBotao)
+buttonPlanilhaMensal.pack(side='left', padx=10)
 
-#Seção Histórico Minibio
-secaoHistoricoMinibio = criaSecao(frameSecoes)
+buttonPlanilhaErgon = Button(frameBotoesUpload, text='Subir Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
+buttonPlanilhaErgon.pack(side='left', padx=10)
 
-criaFrame(secaoHistoricoMinibio, '🕘', 'Histórico Minibio', infosHistoricoMinibio)
+buttonPlanilhaHistorico = Button(frameBotoesUpload, text='Subir Histórico', command=lambda: carregaPlanilhas('historico'), **estiloBotao)
+buttonPlanilhaHistorico.pack(side='left', padx=10)
 
-buttonPlanilhaErgon, buttonPlanilhaHistorico, buttonProcessaHistorico = criaBotoes(secaoHistoricoMinibio, 'Planilha Ergon', 'Planilha Histórico', 'ergon', 'historico', processaPlanilhasHistoricoMinibio)
+# Botões de Ação
+frameBotoesAcao = Frame(janela, bg=corFundo)
+frameBotoesAcao.pack(pady=20)
 
+buttonValoresDiferentes = Button(frameBotoesAcao, text='Valores Diferentes', command=mostraValoresDiferentes, **estiloBotao)
+buttonValoresDiferentes.config(state='disabled', bg=corCinza)
+buttonValoresDiferentes.pack(side='left', padx=10)
+
+buttonNomesDuplicados = Button(frameBotoesAcao, text='Nomes Duplicados', command=mostraNomesDuplicados, **estiloBotao)
+buttonNomesDuplicados.config(state='disabled', bg=corCinza)
+buttonNomesDuplicados.pack(side='left', padx=10)
+
+buttonGerarHistorico = Button(frameBotoesAcao, text='Gerar Histórico', command=processaPlanilhasHistoricoMinibio, **estiloBotao)
+buttonGerarHistorico.config(state='disabled', bg=corCinza)
+buttonGerarHistorico.pack(side='left', padx=10)
 
 labelMensagem = Label(janela, bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 10, 'bold'))
-labelMensagem.pack(pady=20)
+labelMensagem.pack(pady=10)
 
 buttonRefresh = Button(janela, text='↻', command=lambda: resetaTudo(), fg=corAzul, activeforeground=corAzulEscuro, font=('Segoe UI', 25, 'bold'), relief='flat', bd=0, width=3, height=1, cursor='hand2')
 buttonRefresh.place(relx=1.0, rely=1.0, x=-25, y=-20, anchor='se')
