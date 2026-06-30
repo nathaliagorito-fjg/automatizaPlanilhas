@@ -21,7 +21,7 @@ O programa executa as seguintes operações principais:
    - Permite exportar e acrescentar essas divergências diretamente em uma planilha de **Histórico** selecionada pelo usuário.
 
 3. **Nomes Duplicados:**
-   - Detecta registros que possuem o mesmo **CPF** repetido na planilha minibio e exibe em formato de tabela para análise manual (detalhando nome, início de lotação, setor e órgão).
+   - Detecta registros que possuem o mesmo **CPF** repetido na planilha Ergon e exibe em formato de tabela para análise manual (detalhando nome, início de lotação, setor e órgão).
 
 4. **Padronização e Normalização:**
    - Normaliza os textos removendo acentos, caracteres especiais e padronizando caixas de texto (maiúsculo) para evitar falsos positivos na comparação.

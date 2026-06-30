@@ -199,7 +199,7 @@ infosLideresMensais = """Esta ferramenta faz:
 1. Elimina registros da planilha minibio que não estejam na planilha Ergon;
 2. Salva uma nova planilha sem esses registros eliminados;
 3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE, NOME_SETOR e REFERENCIA;
-4. Exibe registros de nomes duplicados da planilha minibio;
+4. Exibe registros de nomes duplicados da planilha Ergon;
 5. Salva em uma planilha da sua escolha os registros com valores diferentes.
 
 OBS: A planilha minibio precisa conter a palavra 'minibio' no nome e a planilha do Ergon precisa conter a palavra 'ergon' no nome"""

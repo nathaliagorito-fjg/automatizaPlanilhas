@@ -123,11 +123,14 @@ def processaPlanilhasLideresMensais():
 
     planilhaErgon['ORGAO_ENTIDADE'] = planilhaErgon['ORGAO_ENTIDADE'].apply(normalizaTexto)
 
+    if 'SIGLA' in planilhaErgon.columns:
+        planilhaErgon = planilhaErgon.drop(columns=['SIGLA'])
+
     planilhaMinibio['CPF'] = planilhaMinibio['CPF'].apply(normalizaCPF)
     planilhaErgon['CPF'] = planilhaErgon['CPF'].apply(normalizaCPF)
 
     planilhaMinibio = planilhaMinibio[planilhaMinibio['CPF'].isin(planilhaErgon['CPF'])]
-    nomesDuplicados = planilhaMinibio[planilhaMinibio.duplicated(subset=['CPF'], keep=False)]
+    nomesDuplicados = planilhaErgon[planilhaErgon.duplicated(subset=['CPF'], keep=False)]
 
     defineSiglas()
 
