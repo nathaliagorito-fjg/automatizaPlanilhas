@@ -62,4 +62,5 @@ pip install pandas openpyxl pandastable
 
 ### Criando o executável
 1. Abra o terminal na pasta do projeto.
-2. Execute "python -m PyInstaller --add-data "iconeRefresh.png;." —add-data “iconeInterface.ico;.” --icon "iconeInterface.ico" --name "Processador de Planilhas Lideres Cariocas" --onefile --windowed Interface.py".
+2. Instale o PyInstaller.
+3. Execute "python -m PyInstaller --add-data "iconeInterface.ico;." --icon "iconeInterface.ico" --name "Processador de Planilhas Lideres Cariocas" --onefile --windowed Interface.py". O executável é gerado na própria pasta do projeto, dentro de Dist.
