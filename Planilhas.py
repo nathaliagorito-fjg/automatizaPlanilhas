@@ -14,6 +14,15 @@ def normalizaTexto(texto):
 
     return texto
 
+def normalizaCPF(cpf):
+    if pd.isna(cpf):
+        return ""
+    cpf_str = str(cpf).split('.')[0]
+    digitos = ''.join(c for c in cpf_str if c.isdigit())
+    if len(digitos) > 0:
+        return digitos.zfill(11)
+    return ""
+
 def criaSigla(palavra, sigla):
     global planilhaMensal
 
@@ -100,6 +109,9 @@ def processaPlanilhasLideresMensais():
         planilhaMensal = planilhaMensal.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
     if 'NOME_SETOR' in planilhaMensal.columns and 'NOMESETOR' not in planilhaMensal.columns:
         planilhaMensal = planilhaMensal.rename(columns={'NOME_SETOR': 'NOMESETOR'})
+
+    if 'ORGAO_ENTIDADE' in planilhaMensal.columns:
+        planilhaMensal['SIGLA'] = planilhaMensal['ORGAO_ENTIDADE'].apply(normalizaTexto)
         
     planilhaMensal['INICIO_LOTACAO'] = pd.to_datetime(planilhaMensal['INICIO_LOTACAO'], errors='coerce')
     planilhaMensal['INICIO_LOTACAO'] = planilhaMensal['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
@@ -111,14 +123,20 @@ def processaPlanilhasLideresMensais():
 
     planilhaErgon['ORGAO_ENTIDADE'] = planilhaErgon['ORGAO_ENTIDADE'].apply(normalizaTexto)
 
-    planilhaMensal = planilhaMensal[planilhaMensal['NOME'].isin(planilhaErgon['NOME'])]
-    nomesDuplicados = planilhaMensal[planilhaMensal.duplicated(subset=['NOME'], keep=False)]
+    planilhaMensal['CPF'] = planilhaMensal['CPF'].apply(normalizaCPF)
+    planilhaErgon['CPF'] = planilhaErgon['CPF'].apply(normalizaCPF)
+
+    planilhaMensal = planilhaMensal[planilhaMensal['CPF'].isin(planilhaErgon['CPF'])]
+    nomesDuplicados = planilhaMensal[planilhaMensal.duplicated(subset=['CPF'], keep=False)]
 
     defineSiglas()
 
     temReferencia = 'REFERENCIA' in planilhaMensal.columns and 'REFERENCIA' in planilhaErgon.columns
 
-    planilhasMescladas = planilhaMensal.merge(planilhaErgon, on = 'NOME', how = 'inner', suffixes = ('_MENSAL', '_ERGON'))
+    planilhasMescladas = planilhaMensal.merge(planilhaErgon, on = 'CPF', how = 'inner', suffixes = ('_MENSAL', '_ERGON'))
+    
+    if 'NOME_MENSAL' in planilhasMescladas.columns:
+        planilhasMescladas = planilhasMescladas.rename(columns={'NOME_MENSAL': 'NOME'})
     
     comparacaoIguais = (
         (planilhasMescladas['ORGAO_ENTIDADE_ERGON'] == planilhasMescladas['SIGLA'])

@@ -11,19 +11,21 @@ A aplicação conta com uma interface gráfica amigável desenvolvida em `Tkinte
 O programa executa as seguintes operações principais:
 
 1. **Limpeza de Ex-Líderes:** 
-   - Identifica e remove os registros da planilha mensal cujos nomes não constam na planilha do Ergon (indicando desligamento ou ausência do programa).
+   - Identifica e remove os registros da planilha mensal cujos CPFs não constam na planilha do Ergon (indicando desligamento ou ausência do programa).
    - Gera automaticamente um novo arquivo atualizado chamado `Planilha Mensal - eliminados registros de ex líderes.xlsx`.
 
 2. **Divergência de Dados (Valores Diferentes):**
+   - Cruza os dados das planilhas utilizando o **CPF** como chave.
    - Compara o **Órgão/Entidade** (usando mapeamento inteligente de siglas), o **Setor** e, caso a coluna **REFERENCIA** esteja presente em ambas as planilhas, a **Referência** dos cargos.
    - Apresenta em uma tabela interativa todos os registros ativos que possuem dados divergentes entre as duas fontes.
    - Permite exportar e acrescentar essas divergências diretamente em uma planilha de **Histórico** selecionada pelo usuário.
 
 3. **Nomes Duplicados:**
-   - Detecta registros que possuem o mesmo nome repetido na planilha mensal e exibe em formato de tabela para análise manual (detalhando início de lotação, setor e órgão).
+   - Detecta registros que possuem o mesmo **CPF** repetido na planilha mensal e exibe em formato de tabela para análise manual (detalhando nome, início de lotação, setor e órgão).
 
 4. **Padronização e Normalização:**
    - Normaliza os textos removendo acentos, caracteres especiais e padronizando caixas de texto (maiúsculo) para evitar falsos positivos na comparação.
+   - Normaliza os CPFs para conter apenas números e preenche com zeros à esquerda até 11 dígitos, eliminando discrepâncias de formatação.
    - Mapeia automaticamente os nomes completos dos órgãos (ex: "Gabinete do Prefeito") para suas respectivas siglas (ex: "GBP").
 
 ---

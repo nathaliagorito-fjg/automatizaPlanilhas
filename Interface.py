@@ -116,6 +116,8 @@ def mostraValoresDiferentes():
         return
     
     colunas_exibir = ['NOME', 'ORGAO_ENTIDADE_ERGON', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_ERGON', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']
+    if 'CPF' in planilhasMescladasProcessado.columns:
+        colunas_exibir.insert(1, 'CPF')
     if 'REFERENCIA_MENSAL' in planilhasMescladasProcessado.columns and 'REFERENCIA_ERGON' in planilhasMescladasProcessado.columns:
         colunas_exibir.extend(['REFERENCIA_MENSAL', 'REFERENCIA_ERGON'])
         
@@ -160,9 +162,10 @@ def mostraNomesDuplicados():
     if not garantirProcessamentoLideres():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
-    mostraPlanilha(nomesDuplicadosProcessado[['NOME','INICIO_LOTACAO','NOMESETOR','ORGAO_ENTIDADE']], 'Nomes Duplicados')
-
-
+    colunasDuplicadas = ['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']
+    if 'CPF' in nomesDuplicadosProcessado.columns:
+        colunasDuplicadas.insert(1, 'CPF')
+    mostraPlanilha(nomesDuplicadosProcessado[colunasDuplicadas], 'Nomes Duplicados')
 
 def resetaTudo():
     global dadosProcessadosMensal
@@ -231,7 +234,6 @@ buttonPlanilhaErgon = Button(frameBotoesUpload, text='Planilha Ergon', command=l
 buttonPlanilhaErgon.pack(side='left', padx=10)
 
 
-
 frameBotoesAcao = Frame(janela, bg=corFundo)
 frameBotoesAcao.pack(pady=20)
 
@@ -242,7 +244,6 @@ buttonValoresDiferentes.pack(side='left', padx=10)
 buttonNomesDuplicados = Button(frameBotoesAcao, text='Nomes Duplicados', command=mostraNomesDuplicados, **estiloBotao)
 buttonNomesDuplicados.config(state='disabled', bg=corCinza)
 buttonNomesDuplicados.pack(side='left', padx=10)
-
 
 
 labelMensagem = Label(janela, bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 10, 'bold'))
