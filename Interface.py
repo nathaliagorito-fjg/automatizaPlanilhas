@@ -20,6 +20,7 @@ def armazenaImagem(diretorioAtual):
 dadosProcessadosMinibio = False
 nomesDuplicadosProcessado = None
 planilhasMescladasProcessado = None
+nomesNaoEmErgonProcessado = None
 
 def carregaPlanilhas(tipo):
     diretorio = askopenfilename(filetypes=[('Excel files', '*.xlsx *.xls')])
@@ -31,6 +32,7 @@ def carregaPlanilhas(tipo):
         if Planilhas.planilhaMinibio is not None and Planilhas.planilhaErgon is not None:
             buttonValoresDiferentes.config(state='normal', bg=corAzul)
             buttonNomesDuplicados.config(state='normal', bg=corAzul)
+            buttonAusentesNoErgon.config(state='normal', bg=corAzul)
 
     def validaTipoPlanilha(tipo):
         tipos = {'minibio': ['minibio'], 'ergon': ['ergon']}
@@ -82,9 +84,9 @@ def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
             novaJanela.protocol("WM_DELETE_WINDOW", lambda:fechaJanelaDadosDuplicados(novaJanela))
 
 def garantirProcessamentoLideres():
-    global dadosProcessadosMinibio, nomesDuplicadosProcessado, planilhasMescladasProcessado
+    global dadosProcessadosMinibio, nomesDuplicadosProcessado, planilhasMescladasProcessado, nomesNaoEmErgonProcessado
     if not dadosProcessadosMinibio:
-        nomesDuplicadosProcessado, planilhasMescladasProcessado, planilhaAlterada = Planilhas.processaPlanilhasLideresMensais()
+        nomesDuplicadosProcessado, planilhasMescladasProcessado, planilhaAlterada, nomesNaoEmErgonProcessado = Planilhas.processaPlanilhasLideresMensais()
 
         if nomesDuplicadosProcessado is None:
             return False
@@ -160,11 +162,21 @@ def mostraNomesDuplicados():
     if not garantirProcessamentoLideres():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
-    # colunasDuplicadas = ['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']
+
     colunasDuplicadas = ['NOME', 'NOMESETOR', 'ORGAO_ENTIDADE']
+    
     if 'CPF' in nomesDuplicadosProcessado.columns:
         colunasDuplicadas.insert(1, 'CPF')
     mostraPlanilha(nomesDuplicadosProcessado[colunasDuplicadas], 'Nomes Duplicados')
+
+def mostraNaoEmErgon():
+    if not garantirProcessamentoLideres():
+        labelMensagem['text'] = 'Carregue as planilhas primeiro!'
+        return
+    colunasNaoEmErgon = ['NOME', 'NOMESETOR', 'ORGAO_ENTIDADE']
+    if 'CPF' in nomesNaoEmErgonProcessado.columns:
+        colunasNaoEmErgon.insert(1, 'CPF')
+    mostraPlanilha(nomesNaoEmErgonProcessado[colunasNaoEmErgon], 'Ausentes no Ergon')
 
 def resetaTudo():
     global dadosProcessadosMinibio
@@ -175,6 +187,7 @@ def resetaTudo():
     
     buttonValoresDiferentes.config(state='disabled', bg=corCinza)
     buttonNomesDuplicados.config(state='disabled', bg=corCinza)
+    buttonAusentesNoErgon.config(state='disabled', bg=corCinza)
 
     Planilhas.planilhaMinibio = None
     Planilhas.planilhaErgon = None
@@ -200,7 +213,8 @@ infosLideresMensais = """Esta ferramenta faz:
 2. Salva uma nova planilha sem esses registros eliminados;
 3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE, NOME_SETOR e REFERENCIA;
 4. Exibe registros de nomes duplicados da planilha Ergon;
-5. Salva em uma planilha da sua escolha os registros com valores diferentes.
+5. Exibe registros da planilha minibio que não constam na planilha Ergon;
+6. Salva em uma planilha da sua escolha os registros com valores diferentes.
 
 OBS: A planilha minibio precisa conter a palavra 'minibio' no nome e a planilha do Ergon precisa conter a palavra 'ergon' no nome"""
 
@@ -246,6 +260,10 @@ buttonValoresDiferentes.pack(side='left', padx=10)
 buttonNomesDuplicados = Button(frameBotoesAcao, text='Nomes Duplicados', command=mostraNomesDuplicados, **estiloBotao)
 buttonNomesDuplicados.config(state='disabled', bg=corCinza)
 buttonNomesDuplicados.pack(side='left', padx=10)
+
+buttonAusentesNoErgon = Button(frameBotoesAcao, text='Ausentes no Ergon', command=mostraNaoEmErgon, **estiloBotao)
+buttonAusentesNoErgon.config(state='disabled', bg=corCinza)
+buttonAusentesNoErgon.pack(side='left', padx=10)
 
 
 labelMensagem = Label(janela, bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 10, 'bold'))

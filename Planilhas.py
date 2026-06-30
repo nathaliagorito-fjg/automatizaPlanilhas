@@ -109,13 +109,8 @@ def processaPlanilhasLideresMensais():
         planilhaMinibio = planilhaMinibio.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
     if 'NOME_SETOR' in planilhaMinibio.columns and 'NOMESETOR' not in planilhaMinibio.columns:
         planilhaMinibio = planilhaMinibio.rename(columns={'NOME_SETOR': 'NOMESETOR'})
-
     if 'ORGAO_ENTIDADE' in planilhaMinibio.columns:
         planilhaMinibio['SIGLA'] = planilhaMinibio['ORGAO_ENTIDADE'].apply(normalizaTexto)
-        
-    # planilhaMinibio['INICIO_LOTACAO'] = pd.to_datetime(planilhaMinibio['INICIO_LOTACAO'], errors='coerce')
-    # planilhaMinibio['INICIO_LOTACAO'] = planilhaMinibio['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
-    
     if 'SIGLA_ORGAO_ENTIDADE' in planilhaErgon.columns and 'ORGAO_ENTIDADE' not in planilhaErgon.columns:
         planilhaErgon = planilhaErgon.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
     if 'NOME_SETOR' in planilhaErgon.columns and 'NOMESETOR' not in planilhaErgon.columns:
@@ -129,12 +124,11 @@ def processaPlanilhasLideresMensais():
     planilhaMinibio['CPF'] = planilhaMinibio['CPF'].apply(normalizaCPF)
     planilhaErgon['CPF'] = planilhaErgon['CPF'].apply(normalizaCPF)
 
+    nomesNaoEmErgon = planilhaMinibio[~planilhaMinibio['CPF'].isin(planilhaErgon['CPF'])].copy()
     planilhaMinibio = planilhaMinibio[planilhaMinibio['CPF'].isin(planilhaErgon['CPF'])]
     nomesDuplicados = planilhaErgon[planilhaErgon.duplicated(subset=['CPF'], keep=False)]
 
     defineSiglas()
-
-    temReferencia = 'REFERENCIA' in planilhaMinibio.columns and 'REFERENCIA' in planilhaErgon.columns
 
     planilhasMescladas = planilhaMinibio.merge(planilhaErgon, on = 'CPF', how = 'inner', suffixes = ('_MINIBIO', '_ERGON'))
     
@@ -145,15 +139,14 @@ def processaPlanilhasLideresMensais():
         (planilhasMescladas['ORGAO_ENTIDADE_ERGON'] == planilhasMescladas['SIGLA'])
         &
         (planilhasMescladas['NOMESETOR_ERGON'] == planilhasMescladas['NOMESETOR_MINIBIO'])
-    )
-
-    if temReferencia:
-        comparacaoIguais = comparacaoIguais & (
+        &
+        (
             (planilhasMescladas['REFERENCIA_MINIBIO'] == planilhasMescladas['REFERENCIA_ERGON']) |
             (planilhasMescladas['REFERENCIA_MINIBIO'].isna() & planilhasMescladas['REFERENCIA_ERGON'].isna())
         )
+    )
 
     planilhasMescladas['IGUAIS'] = comparacaoIguais
 
-    return nomesDuplicados, planilhasMescladas, planilhaMinibio
+    return nomesDuplicados, planilhasMescladas, planilhaMinibio, nomesNaoEmErgon
 
