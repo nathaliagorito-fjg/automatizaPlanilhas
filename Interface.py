@@ -50,11 +50,6 @@ def carregaPlanilhas(tipo):
     if tipo == 'minibio':
         Planilhas.planilhaMinibio = pd.read_excel(diretorio)
 
-        global planilhaMinibioAtiva, planilhaMinibioFormatada
-
-        planilhaMinibioFormatada = load_workbook(diretorio)
-        planilhaMinibioAtiva = planilhaMinibioFormatada.active
-
         labelMensagem['text'] = 'Planilha MINIBIO carregada.'
 
         testaPlanilhasLideresMensaisCarregadas()
@@ -86,27 +81,16 @@ def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
 def garantirProcessamentoLideres():
     global dadosProcessadosMinibio, nomesDuplicadosProcessado, planilhasMescladasProcessado, nomesNaoEmErgonProcessado
     if not dadosProcessadosMinibio:
-        nomesDuplicadosProcessado, planilhasMescladasProcessado, planilhaAlterada, nomesNaoEmErgonProcessado = Planilhas.processaPlanilhasLideresMensais()
+        try:
+            nomesDuplicadosProcessado, planilhasMescladasProcessado, planilhaAlterada, nomesNaoEmErgonProcessado = Planilhas.processaPlanilhasLideresMensais()
+        except ValueError as e:
+            messagebox.showerror("Erro de Coluna", str(e))
+            labelMensagem['text'] = str(e)
+            return False
 
         if nomesDuplicadosProcessado is None:
             return False
 
-        for linha in planilhaMinibioAtiva.iter_rows():
-            for coluna in linha:
-                coluna.value = None
-        
-        for indiceColuna, coluna in enumerate(planilhaAlterada.columns, start=1):
-            planilhaMinibioAtiva.cell(row=1, column=indiceColuna, value=coluna)
-
-        for indiceLinha, linha in planilhaAlterada.iterrows():
-            for indiceColuna, coluna in enumerate(linha, start=1):
-                planilhaMinibioAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
-
-        for i in range(planilhaMinibioAtiva.max_row, 1, -1):
-            if planilhaMinibioAtiva.cell(row=i, column=1).value is None:
-                planilhaMinibioAtiva.delete_rows(i)
-            
-        planilhaMinibioFormatada.save('Planilha Minibio - eliminados registros de ex líderes.xlsx')
         dadosProcessadosMinibio = True
     return True
 
@@ -209,12 +193,10 @@ estiloBotao = {'bg': corAzul, 'fg': 'white', 'activebackground': corAzulEscuro, 
 
 infosLideresMensais = """Esta ferramenta faz:
 
-1. Elimina registros da planilha minibio que não estejam na planilha Ergon;
-2. Salva uma nova planilha sem esses registros eliminados;
-3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE, NOME_SETOR e REFERENCIA;
-4. Exibe registros de nomes duplicados da planilha Ergon;
-5. Exibe registros da planilha minibio que não constam na planilha Ergon;
-6. Salva em uma planilha da sua escolha os registros com valores diferentes.
+1. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE, NOME_SETOR e REFERENCIA;
+2. Exibe registros de nomes duplicados da planilha Ergon;
+3. Exibe registros da planilha minibio que não constam na planilha Ergon;
+4. Salva em uma planilha da sua escolha os registros com valores diferentes.
 
 OBS: A planilha minibio precisa conter a palavra 'minibio' no nome e a planilha do Ergon precisa conter a palavra 'ergon' no nome"""
 

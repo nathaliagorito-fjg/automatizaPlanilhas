@@ -1,6 +1,5 @@
 import pandas as pd
 import unicodedata as uni
-from openpyxl import load_workbook
 
 planilhaMinibio = None
 planilhaErgon = None
@@ -102,6 +101,24 @@ def processaPlanilhasLideresMensais():
 
     if planilhaMinibio is None or planilhaErgon is None:
         return None, None, None
+
+    # Validação de colunas obrigatórias na Minibio
+    for col in ['CPF', 'NOME', 'REFERENCIA']:
+        if col not in planilhaMinibio.columns:
+            raise ValueError(f"Coluna '{col}' não encontrada na Planilha Minibio.")
+    if 'ORGAO_ENTIDADE' not in planilhaMinibio.columns and 'SIGLA_ORGAO_ENTIDADE' not in planilhaMinibio.columns:
+        raise ValueError("Coluna de Órgão/Entidade ('ORGAO_ENTIDADE' ou 'SIGLA_ORGAO_ENTIDADE') não encontrada na Planilha Minibio.")
+    if 'NOMESETOR' not in planilhaMinibio.columns and 'NOME_SETOR' not in planilhaMinibio.columns:
+        raise ValueError("Coluna de Setor ('NOMESETOR' ou 'NOME_SETOR') não encontrada na Planilha Minibio.")
+
+    # Validação de colunas obrigatórias na Ergon
+    for col in ['CPF', 'NOME', 'REFERENCIA']:
+        if col not in planilhaErgon.columns:
+            raise ValueError(f"Coluna '{col}' não encontrada na Planilha Ergon.")
+    if 'ORGAO_ENTIDADE' not in planilhaErgon.columns and 'SIGLA_ORGAO_ENTIDADE' not in planilhaErgon.columns:
+        raise ValueError("Coluna de Órgão/Entidade ('ORGAO_ENTIDADE' ou 'SIGLA_ORGAO_ENTIDADE') não encontrada na Planilha Ergon.")
+    if 'NOMESETOR' not in planilhaErgon.columns and 'NOME_SETOR' not in planilhaErgon.columns:
+        raise ValueError("Coluna de Setor ('NOMESETOR' ou 'NOME_SETOR') não encontrada na Planilha Ergon.")
 
     pd.set_option('display.max_rows', None)
     
