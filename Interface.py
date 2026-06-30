@@ -17,7 +17,7 @@ def armazenaImagem(diretorioAtual):
     
     return os.path.join(diretorioTemporario, diretorioAtual)
 
-dadosProcessadosMensal = False
+dadosProcessadosMinibio = False
 nomesDuplicadosProcessado = None
 planilhasMescladasProcessado = None
 
@@ -28,14 +28,12 @@ def carregaPlanilhas(tipo):
         return
     
     def testaPlanilhasLideresMensaisCarregadas():
-        if Planilhas.planilhaMensal is not None and Planilhas.planilhaErgon is not None:
+        if Planilhas.planilhaMinibio is not None and Planilhas.planilhaErgon is not None:
             buttonValoresDiferentes.config(state='normal', bg=corAzul)
             buttonNomesDuplicados.config(state='normal', bg=corAzul)
 
-
-
     def validaTipoPlanilha(tipo):
-        tipos = {'mensal': ['mensal'], 'ergon': ['ergon']}
+        tipos = {'minibio': ['minibio'], 'ergon': ['ergon']}
 
         nomeArquivo = diretorio.lower()
 
@@ -47,15 +45,15 @@ def carregaPlanilhas(tipo):
 
         return
 
-    if tipo == 'mensal':
-        Planilhas.planilhaMensal = pd.read_excel(diretorio)
+    if tipo == 'minibio':
+        Planilhas.planilhaMinibio = pd.read_excel(diretorio)
 
-        global planilhaMensalAtiva, planilhaMensalFormatada
+        global planilhaMinibioAtiva, planilhaMinibioFormatada
 
-        planilhaMensalFormatada = load_workbook(diretorio)
-        planilhaMensalAtiva = planilhaMensalFormatada.active
+        planilhaMinibioFormatada = load_workbook(diretorio)
+        planilhaMinibioAtiva = planilhaMinibioFormatada.active
 
-        labelMensagem['text'] = 'Planilha MENSAL DOS LÍDERES carregada.'
+        labelMensagem['text'] = 'Planilha MINIBIO carregada.'
 
         testaPlanilhasLideresMensaisCarregadas()
     elif tipo == 'ergon':
@@ -84,30 +82,30 @@ def mostraPlanilha(planilha, titulo, fechaJanelaDadosDuplicados=None):
             novaJanela.protocol("WM_DELETE_WINDOW", lambda:fechaJanelaDadosDuplicados(novaJanela))
 
 def garantirProcessamentoLideres():
-    global dadosProcessadosMensal, nomesDuplicadosProcessado, planilhasMescladasProcessado
-    if not dadosProcessadosMensal:
+    global dadosProcessadosMinibio, nomesDuplicadosProcessado, planilhasMescladasProcessado
+    if not dadosProcessadosMinibio:
         nomesDuplicadosProcessado, planilhasMescladasProcessado, planilhaAlterada = Planilhas.processaPlanilhasLideresMensais()
 
         if nomesDuplicadosProcessado is None:
             return False
 
-        for linha in planilhaMensalAtiva.iter_rows():
+        for linha in planilhaMinibioAtiva.iter_rows():
             for coluna in linha:
                 coluna.value = None
         
         for indiceColuna, coluna in enumerate(planilhaAlterada.columns, start=1):
-            planilhaMensalAtiva.cell(row=1, column=indiceColuna, value=coluna)
+            planilhaMinibioAtiva.cell(row=1, column=indiceColuna, value=coluna)
 
         for indiceLinha, linha in planilhaAlterada.iterrows():
             for indiceColuna, coluna in enumerate(linha, start=1):
-                planilhaMensalAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
+                planilhaMinibioAtiva.cell(row=indiceLinha + 2, column=indiceColuna, value=coluna)
 
-        for i in range(planilhaMensalAtiva.max_row, 1, -1):
-            if planilhaMensalAtiva.cell(row=i, column=1).value is None:
-                planilhaMensalAtiva.delete_rows(i)
+        for i in range(planilhaMinibioAtiva.max_row, 1, -1):
+            if planilhaMinibioAtiva.cell(row=i, column=1).value is None:
+                planilhaMinibioAtiva.delete_rows(i)
             
-        planilhaMensalFormatada.save('Planilha Mensal - eliminados registros de ex líderes.xlsx')
-        dadosProcessadosMensal = True
+        planilhaMinibioFormatada.save('Planilha Minibio - eliminados registros de ex líderes.xlsx')
+        dadosProcessadosMinibio = True
     return True
 
 def mostraValoresDiferentes():
@@ -115,13 +113,13 @@ def mostraValoresDiferentes():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
     
-    colunas_exibir = ['NOME', 'ORGAO_ENTIDADE_ERGON', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_ERGON', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']
+    colunasExibir = ['NOME', 'ORGAO_ENTIDADE_ERGON', 'ORGAO_ENTIDADE_MINIBIO', 'NOMESETOR_ERGON', 'NOMESETOR_MINIBIO', 'SIGLA']
     if 'CPF' in planilhasMescladasProcessado.columns:
-        colunas_exibir.insert(1, 'CPF')
-    if 'REFERENCIA_MENSAL' in planilhasMescladasProcessado.columns and 'REFERENCIA_ERGON' in planilhasMescladasProcessado.columns:
-        colunas_exibir.extend(['REFERENCIA_MENSAL', 'REFERENCIA_ERGON'])
+        colunasExibir.insert(1, 'CPF')
+    if 'REFERENCIA_MINIBIO' in planilhasMescladasProcessado.columns and 'REFERENCIA_ERGON' in planilhasMescladasProcessado.columns:
+        colunasExibir.extend(['REFERENCIA_MINIBIO', 'REFERENCIA_ERGON'])
         
-    valoresDiferentes = planilhasMescladasProcessado.loc[planilhasMescladasProcessado['IGUAIS'] == False, colunas_exibir]
+    valoresDiferentes = planilhasMescladasProcessado.loc[planilhasMescladasProcessado['IGUAIS'] == False, colunasExibir]
     
     def confirmarSalvamento(janelaPopup):
         resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores diferentes na planilha Histórico?")
@@ -162,22 +160,23 @@ def mostraNomesDuplicados():
     if not garantirProcessamentoLideres():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
-    colunasDuplicadas = ['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']
+    # colunasDuplicadas = ['NOME', 'INICIO_LOTACAO', 'NOMESETOR', 'ORGAO_ENTIDADE']
+    colunasDuplicadas = ['NOME', 'NOMESETOR', 'ORGAO_ENTIDADE']
     if 'CPF' in nomesDuplicadosProcessado.columns:
         colunasDuplicadas.insert(1, 'CPF')
     mostraPlanilha(nomesDuplicadosProcessado[colunasDuplicadas], 'Nomes Duplicados')
 
 def resetaTudo():
-    global dadosProcessadosMensal
-    dadosProcessadosMensal = False
+    global dadosProcessadosMinibio
+    dadosProcessadosMinibio = False
     
-    buttonPlanilhaMensal.config(state='normal', bg=corAzul)
+    buttonPlanilhaMinibio.config(state='normal', bg=corAzul)
     buttonPlanilhaErgon.config(state='normal', bg=corAzul)
     
     buttonValoresDiferentes.config(state='disabled', bg=corCinza)
     buttonNomesDuplicados.config(state='disabled', bg=corCinza)
 
-    Planilhas.planilhaMensal = None
+    Planilhas.planilhaMinibio = None
     Planilhas.planilhaErgon = None
 
     labelMensagem['text'] = ''
@@ -197,10 +196,13 @@ estiloBotao = {'bg': corAzul, 'fg': 'white', 'activebackground': corAzulEscuro, 
 
 infosLideresMensais = """Esta ferramenta faz:
 
-1. Elimina registros da planilha mensal que não estejam na planilha Ergon;
+1. Elimina registros da planilha minibio que não estejam na planilha Ergon;
 2. Salva uma nova planilha sem esses registros eliminados;
-3. Exibe registros das duas planilhas que estejam com valores diferentes.
-4. Exibe registros de nomes duplicados."""
+3. Exibe registros das duas planilhas que estejam com valores diferentes para ORGAO_ENTIDADE, NOME_SETOR e REFERENCIA;
+4. Exibe registros de nomes duplicados da planilha minibio;
+5. Salva em uma planilha da sua escolha os registros com valores diferentes.
+
+OBS: A planilha minibio precisa conter a palavra 'minibio' no nome e a planilha do Ergon precisa conter a palavra 'ergon' no nome"""
 
 janela = Tk()
 janela.iconbitmap(armazenaImagem('iconeInterface.ico'))
@@ -227,8 +229,8 @@ Label(frameInstrucoes, text=infosLideresMensais, bg=corCard, fg=corTexto, justif
 frameBotoesUpload = Frame(janela, bg=corFundo)
 frameBotoesUpload.pack(pady=10)
 
-buttonPlanilhaMensal = Button(frameBotoesUpload, text='Planilha Mensal', command=lambda: carregaPlanilhas('mensal'), **estiloBotao)
-buttonPlanilhaMensal.pack(side='left', padx=10)
+buttonPlanilhaMinibio = Button(frameBotoesUpload, text='Planilha Minibio', command=lambda: carregaPlanilhas('minibio'), **estiloBotao)
+buttonPlanilhaMinibio.pack(side='left', padx=10)
 
 buttonPlanilhaErgon = Button(frameBotoesUpload, text='Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
 buttonPlanilhaErgon.pack(side='left', padx=10)

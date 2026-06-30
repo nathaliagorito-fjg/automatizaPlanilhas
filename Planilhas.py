@@ -2,7 +2,7 @@ import pandas as pd
 import unicodedata as uni
 from openpyxl import load_workbook
 
-planilhaMensal = None
+planilhaMinibio = None
 planilhaErgon = None
 planilhaHistorico = None
 diretorioHistorico = None
@@ -24,12 +24,12 @@ def normalizaCPF(cpf):
     return ""
 
 def criaSigla(palavra, sigla):
-    global planilhaMensal
+    global planilhaMinibio
 
     sigla = normalizaTexto(sigla)
 
-    if planilhaMensal is not None:
-        planilhaMensal.loc[planilhaMensal['ORGAO_ENTIDADE'].str.contains(palavra, case=False, na=False), 'SIGLA'] = sigla
+    if planilhaMinibio is not None:
+        planilhaMinibio.loc[planilhaMinibio['ORGAO_ENTIDADE'].str.contains(palavra, case=False, na=False), 'SIGLA'] = sigla
 
 def defineSiglas():
   #Gabinete e secretarias
@@ -98,23 +98,23 @@ def defineSiglas():
   criaSigla('Fomento do Município', 'INVEST.RIO')
 
 def processaPlanilhasLideresMensais():
-    global planilhaMensal, planilhaErgon
+    global planilhaMinibio, planilhaErgon
 
-    if planilhaMensal is None or planilhaErgon is None:
+    if planilhaMinibio is None or planilhaErgon is None:
         return None, None, None
 
     pd.set_option('display.max_rows', None)
     
-    if 'SIGLA_ORGAO_ENTIDADE' in planilhaMensal.columns and 'ORGAO_ENTIDADE' not in planilhaMensal.columns:
-        planilhaMensal = planilhaMensal.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
-    if 'NOME_SETOR' in planilhaMensal.columns and 'NOMESETOR' not in planilhaMensal.columns:
-        planilhaMensal = planilhaMensal.rename(columns={'NOME_SETOR': 'NOMESETOR'})
+    if 'SIGLA_ORGAO_ENTIDADE' in planilhaMinibio.columns and 'ORGAO_ENTIDADE' not in planilhaMinibio.columns:
+        planilhaMinibio = planilhaMinibio.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
+    if 'NOME_SETOR' in planilhaMinibio.columns and 'NOMESETOR' not in planilhaMinibio.columns:
+        planilhaMinibio = planilhaMinibio.rename(columns={'NOME_SETOR': 'NOMESETOR'})
 
-    if 'ORGAO_ENTIDADE' in planilhaMensal.columns:
-        planilhaMensal['SIGLA'] = planilhaMensal['ORGAO_ENTIDADE'].apply(normalizaTexto)
+    if 'ORGAO_ENTIDADE' in planilhaMinibio.columns:
+        planilhaMinibio['SIGLA'] = planilhaMinibio['ORGAO_ENTIDADE'].apply(normalizaTexto)
         
-    planilhaMensal['INICIO_LOTACAO'] = pd.to_datetime(planilhaMensal['INICIO_LOTACAO'], errors='coerce')
-    planilhaMensal['INICIO_LOTACAO'] = planilhaMensal['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
+    # planilhaMinibio['INICIO_LOTACAO'] = pd.to_datetime(planilhaMinibio['INICIO_LOTACAO'], errors='coerce')
+    # planilhaMinibio['INICIO_LOTACAO'] = planilhaMinibio['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
     
     if 'SIGLA_ORGAO_ENTIDADE' in planilhaErgon.columns and 'ORGAO_ENTIDADE' not in planilhaErgon.columns:
         planilhaErgon = planilhaErgon.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
@@ -123,34 +123,34 @@ def processaPlanilhasLideresMensais():
 
     planilhaErgon['ORGAO_ENTIDADE'] = planilhaErgon['ORGAO_ENTIDADE'].apply(normalizaTexto)
 
-    planilhaMensal['CPF'] = planilhaMensal['CPF'].apply(normalizaCPF)
+    planilhaMinibio['CPF'] = planilhaMinibio['CPF'].apply(normalizaCPF)
     planilhaErgon['CPF'] = planilhaErgon['CPF'].apply(normalizaCPF)
 
-    planilhaMensal = planilhaMensal[planilhaMensal['CPF'].isin(planilhaErgon['CPF'])]
-    nomesDuplicados = planilhaMensal[planilhaMensal.duplicated(subset=['CPF'], keep=False)]
+    planilhaMinibio = planilhaMinibio[planilhaMinibio['CPF'].isin(planilhaErgon['CPF'])]
+    nomesDuplicados = planilhaMinibio[planilhaMinibio.duplicated(subset=['CPF'], keep=False)]
 
     defineSiglas()
 
-    temReferencia = 'REFERENCIA' in planilhaMensal.columns and 'REFERENCIA' in planilhaErgon.columns
+    temReferencia = 'REFERENCIA' in planilhaMinibio.columns and 'REFERENCIA' in planilhaErgon.columns
 
-    planilhasMescladas = planilhaMensal.merge(planilhaErgon, on = 'CPF', how = 'inner', suffixes = ('_MENSAL', '_ERGON'))
+    planilhasMescladas = planilhaMinibio.merge(planilhaErgon, on = 'CPF', how = 'inner', suffixes = ('_MINIBIO', '_ERGON'))
     
-    if 'NOME_MENSAL' in planilhasMescladas.columns:
-        planilhasMescladas = planilhasMescladas.rename(columns={'NOME_MENSAL': 'NOME'})
+    if 'NOME_MINIBIO' in planilhasMescladas.columns:
+        planilhasMescladas = planilhasMescladas.rename(columns={'NOME_MINIBIO': 'NOME'})
     
     comparacaoIguais = (
         (planilhasMescladas['ORGAO_ENTIDADE_ERGON'] == planilhasMescladas['SIGLA'])
         &
-        (planilhasMescladas['NOMESETOR_ERGON'] == planilhasMescladas['NOMESETOR_MENSAL'])
+        (planilhasMescladas['NOMESETOR_ERGON'] == planilhasMescladas['NOMESETOR_MINIBIO'])
     )
 
     if temReferencia:
         comparacaoIguais = comparacaoIguais & (
-            (planilhasMescladas['REFERENCIA_MENSAL'] == planilhasMescladas['REFERENCIA_ERGON']) |
-            (planilhasMescladas['REFERENCIA_MENSAL'].isna() & planilhasMescladas['REFERENCIA_ERGON'].isna())
+            (planilhasMescladas['REFERENCIA_MINIBIO'] == planilhasMescladas['REFERENCIA_ERGON']) |
+            (planilhasMescladas['REFERENCIA_MINIBIO'].isna() & planilhasMescladas['REFERENCIA_ERGON'].isna())
         )
 
     planilhasMescladas['IGUAIS'] = comparacaoIguais
 
-    return nomesDuplicados, planilhasMescladas, planilhaMensal
+    return nomesDuplicados, planilhasMescladas, planilhaMinibio
 
