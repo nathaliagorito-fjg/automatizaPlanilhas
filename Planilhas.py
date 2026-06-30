@@ -96,10 +96,14 @@ def processaPlanilhasLideresMensais():
 
     pd.set_option('display.max_rows', None)
     
+    if 'SIGLA_ORGAO_ENTIDADE' in planilhaMensal.columns and 'ORGAO_ENTIDADE' not in planilhaMensal.columns:
+        planilhaMensal = planilhaMensal.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
+    if 'NOME_SETOR' in planilhaMensal.columns and 'NOMESETOR' not in planilhaMensal.columns:
+        planilhaMensal = planilhaMensal.rename(columns={'NOME_SETOR': 'NOMESETOR'})
+        
     planilhaMensal['INICIO_LOTACAO'] = pd.to_datetime(planilhaMensal['INICIO_LOTACAO'], errors='coerce')
     planilhaMensal['INICIO_LOTACAO'] = planilhaMensal['INICIO_LOTACAO'].dt.strftime('%d/%m/%Y')
     
-    # Renomeia colunas da Ergon para padronizar com a antiga Minibio
     if 'SIGLA_ORGAO_ENTIDADE' in planilhaErgon.columns and 'ORGAO_ENTIDADE' not in planilhaErgon.columns:
         planilhaErgon = planilhaErgon.rename(columns={'SIGLA_ORGAO_ENTIDADE': 'ORGAO_ENTIDADE'})
     if 'NOME_SETOR' in planilhaErgon.columns and 'NOMESETOR' not in planilhaErgon.columns:
@@ -112,12 +116,23 @@ def processaPlanilhasLideresMensais():
 
     defineSiglas()
 
+    temReferencia = 'REFERENCIA' in planilhaMensal.columns and 'REFERENCIA' in planilhaErgon.columns
+
     planilhasMescladas = planilhaMensal.merge(planilhaErgon, on = 'NOME', how = 'inner', suffixes = ('_MENSAL', '_ERGON'))
-    planilhasMescladas['IGUAIS'] = (
+    
+    comparacaoIguais = (
         (planilhasMescladas['ORGAO_ENTIDADE_ERGON'] == planilhasMescladas['SIGLA'])
         &
         (planilhasMescladas['NOMESETOR_ERGON'] == planilhasMescladas['NOMESETOR_MENSAL'])
     )
 
+    if temReferencia:
+        comparacaoIguais = comparacaoIguais & (
+            (planilhasMescladas['REFERENCIA_MENSAL'] == planilhasMescladas['REFERENCIA_ERGON']) |
+            (planilhasMescladas['REFERENCIA_MENSAL'].isna() & planilhasMescladas['REFERENCIA_ERGON'].isna())
+        )
+
+    planilhasMescladas['IGUAIS'] = comparacaoIguais
+
     return nomesDuplicados, planilhasMescladas, planilhaMensal
-
+

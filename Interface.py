@@ -115,7 +115,11 @@ def mostraValoresDiferentes():
         labelMensagem['text'] = 'Carregue as planilhas primeiro!'
         return
     
-    df_diferentes = planilhasMescladasProcessado.loc[planilhasMescladasProcessado['IGUAIS'] == False, ['NOME', 'ORGAO_ENTIDADE_ERGON', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_ERGON', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']]
+    colunas_exibir = ['NOME', 'ORGAO_ENTIDADE_ERGON', 'ORGAO_ENTIDADE_MENSAL', 'NOMESETOR_ERGON', 'NOMESETOR_MENSAL', 'SIGLA', 'IGUAIS']
+    if 'REFERENCIA_MENSAL' in planilhasMescladasProcessado.columns and 'REFERENCIA_ERGON' in planilhasMescladasProcessado.columns:
+        colunas_exibir.extend(['REFERENCIA_MENSAL', 'REFERENCIA_ERGON'])
+        
+    valoresDiferentes = planilhasMescladasProcessado.loc[planilhasMescladasProcessado['IGUAIS'] == False, colunas_exibir]
     
     def confirmarSalvamento(janelaPopup):
         resposta = messagebox.askyesno("Salvar Alterações", "Deseja salvar esses valores diferentes na planilha Histórico?")
@@ -133,7 +137,7 @@ def mostraValoresDiferentes():
 
                 cabecalho = [cell.value for cell in ws[1]]
 
-                for _, linha in df_diferentes.iterrows():
+                for _, linha in valoresDiferentes.iterrows():
                     novaLinha = []
                     for coluna in cabecalho:
                         novaLinha.append(linha.get(coluna, None))
@@ -148,9 +152,9 @@ def mostraValoresDiferentes():
         
         janelaPopup.destroy()  
 
-    callback_fechar = confirmarSalvamento
+    fechaJanela = confirmarSalvamento
     
-    mostraPlanilha(df_diferentes, 'Valores Diferentes', fechaJanelaDadosDuplicados=callback_fechar)
+    mostraPlanilha(valoresDiferentes, 'Valores Diferentes', fechaJanelaDadosDuplicados=fechaJanela)
 
 def mostraNomesDuplicados():
     if not garantirProcessamentoLideres():
@@ -205,7 +209,7 @@ janela.configure(bg=corFundo)
 labelTitulo = Label(janela, text='Processador de Planilhas\nLíderes Cariocas', bg=corFundo, fg=corAzulEscuro, font=('Segoe UI', 26, 'bold'))
 labelTitulo.pack(pady=(25, 20))
 
-# Instruções
+
 frameInstrucoes = Frame(janela, bg=corCard, highlightbackground=corBorda, highlightthickness=1)
 frameInstrucoes.pack(pady=(0, 20), padx=50, fill='x')
 
@@ -216,19 +220,18 @@ Label(frameTituloInst, text='Instruções', bg=corCard, fg=corAzulEscuro, font=(
 
 Label(frameInstrucoes, text=infosLideresMensais, bg=corCard, fg=corTexto, justify='left', font=('Segoe UI', 10)).pack(anchor='w', padx=25, pady=(0, 15))
 
-# Botões de Upload
+
 frameBotoesUpload = Frame(janela, bg=corFundo)
 frameBotoesUpload.pack(pady=10)
 
-buttonPlanilhaMensal = Button(frameBotoesUpload, text='Subir Planilha Mensal', command=lambda: carregaPlanilhas('mensal'), **estiloBotao)
+buttonPlanilhaMensal = Button(frameBotoesUpload, text='Planilha Mensal', command=lambda: carregaPlanilhas('mensal'), **estiloBotao)
 buttonPlanilhaMensal.pack(side='left', padx=10)
 
-buttonPlanilhaErgon = Button(frameBotoesUpload, text='Subir Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
+buttonPlanilhaErgon = Button(frameBotoesUpload, text='Planilha Ergon', command=lambda: carregaPlanilhas('ergon'), **estiloBotao)
 buttonPlanilhaErgon.pack(side='left', padx=10)
 
 
 
-# Botões de Ação
 frameBotoesAcao = Frame(janela, bg=corFundo)
 frameBotoesAcao.pack(pady=20)
 
