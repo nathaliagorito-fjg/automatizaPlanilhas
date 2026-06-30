@@ -6,13 +6,6 @@ planilhaErgon = None
 planilhaHistorico = None
 diretorioHistorico = None
 
-def normalizaTexto(texto):
-    texto = str(texto).upper()
-    texto = ''.join(c for c in uni.normalize('NFD', texto) if uni.category(c) != 'Mn')
-    texto = texto.replace('-', '').replace('.', '')
-
-    return texto
-
 def normalizaCPF(cpf):
     if pd.isna(cpf):
         return ""
@@ -21,6 +14,13 @@ def normalizaCPF(cpf):
     if len(digitos) > 0:
         return digitos.zfill(11)
     return ""
+
+def normalizaTexto(texto):
+    texto = str(texto).upper()
+    texto = ''.join(c for c in uni.normalize('NFD', texto) if uni.category(c) != 'Mn')
+    texto = texto.replace('-', '').replace('.', '')
+
+    return texto
 
 def criaSigla(palavra, sigla):
     global planilhaMinibio
